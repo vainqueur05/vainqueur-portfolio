@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Kairos Portfolio{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Ajustement Navbar pour le thème sombre */
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important; /* Fusion avec dark-bg */
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-link { color: #f1f5f9 !important; font-weight: 500; }
+        .nav-link:hover { color: var(--primary) !important; }
+        .navbar-brand { color: #ffffff !important; }
+        
+        /* Bouton WhatsApp Flottant */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        .whatsapp-float:hover { transform: scale(1.1); color: white; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
+                <i class="bi bi-code-square me-2 text-primary"></i>KAIROS
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="bi bi-list text-white fs-2"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about') }}">À propos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.projects') }}">Projets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.services') }}">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a></li>
+                    
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-info" href="#" role="button" data-bs-toggle="dropdown">Admin</a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.projects') }}">Projets</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.skills') }}">Compétences</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Déconnexion</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-5 mt-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white py-5 mt-5 border-top border-secondary">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3 text-primary">Kairos-Kalema</h5>
+                    <p class="small text-muted">Architecte de solutions digitales basé à Lubumbashi. Je transforme vos défis techniques en interfaces fluides et robustes.</p>
+                    <div class="mt-3">
+                        <span class="badge bg-success border-0 px-3 py-2">Disponible pour projets</span>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <h5 class="fw-bold mb-3">Plan du site</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('main.index') }}" class="text-muted text-decoration-none hover-white">Accueil</a></li>
+                        <li><a href="{{ url_for('main.about') }}" class="text-muted text-decoration-none">À propos</a></li>
+                        <li><a href="{{ url_for('main.projects') }}" class="text-muted text-decoration-none">Projets</a></li>
+                        <li><a href="{{ url_for('main.contact') }}" class="text-muted text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-3">Engagements</h5>
+                    <ul class="list-unstyled small text-muted">
+                        <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Livraison haute performance</li>
+                        <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>SEO & Design attractif</li>
+                        <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Code propre & maintenable</li>
+                        <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Suivi ultra-personnalisé</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <h5 class="fw-bold mb-3">Restons connectés</h5>
+                    <p class="small text-muted"><i class="bi bi-geo-alt me-2"></i> Lubumbashi, RDC</p>
+                    <div class="d-flex gap-3 fs-5">
+                        <a href="#" class="text-white hover-primary"><i class="bi bi-github"></i></a>
+                        <a href="#" class="text-white hover-primary"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://wa.me/243895288981" class="text-white hover-primary"><i class="bi bi-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 opacity-25">
+            <div class="text-center small text-muted">
+                <p class="mb-0">&copy; 2026 KAIROS Portfolio. Conçu avec précision à Lubumbashi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/243895288981?text=Bonjour%20Vainqueur%2C%20je%20souhaite%20discuter%20d'un%20projet" class="whatsapp-float" target="_blank">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

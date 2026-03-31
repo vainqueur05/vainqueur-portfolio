@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance en cours | Vainqueur Kalema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; }
+        .maintenance-card { border: 1px solid rgba(59, 130, 246, 0.2); background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border-radius: 24px; padding: 3rem; max-width: 500px; text-align: center; }
+        .gear-icon { font-size: 4rem; color: #3b82f6; display: inline-block; animation: spin 4s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .status-badge { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+    <div class="maintenance-card shadow-2xl">
+        <div class="mb-4">
+            <i class="bi bi-gear-wide-connected gear-icon"></i>
+        </div>
+        <div class="mb-3">
+            <span class="status-badge fw-bold">Mise à jour du système</span>
+        </div>
+        <h1 class="fw-bold mb-3">Optimisation en cours</h1>
+        <p class="text-muted mb-4">
+            Je peaufine actuellement quelques lignes de code pour vous offrir une meilleure expérience. 
+            Le portfolio sera de retour en ligne d'ici quelques instants.
+        </p>
+        <hr class="border-secondary opacity-25 mb-4">
+        <div class="d-flex justify-content-center gap-3">
+            <a href="mailto:{{ bio.email if bio else 'votre@email.com' }}" class="btn btn-outline-primary rounded-pill px-4">
+                <i class="bi bi-envelope me-2"></i>Urgence
+            </a>
+            <div class="text-muted small align-self-center">
+                Admin : <strong>Vainqueur Kalema</strong>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

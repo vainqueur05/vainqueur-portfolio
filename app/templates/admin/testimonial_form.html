@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ 'Modifier' if testimonial else 'Ajouter' }} un témoignage</h1>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Nom du client</label>
+            <input type="text" name="client_name" class="form-control" value="{{ testimonial.client_name if testimonial else '' }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea name="message" class="form-control" rows="4">{{ testimonial.message if testimonial else '' }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Note (1-5)</label>
+            <input type="number" name="rating" class="form-control" min="1" max="5" value="{{ testimonial.rating if testimonial else 5 }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <a href="{{ url_for('admin.testimonials') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-secondary pb-3">
+        <div>
+            <h1 class="text-white fw-bold"><i class="bi bi-person-gear me-2 text-primary"></i>Configuration d'Identité</h1>
+            <p class="text-muted mb-0 small">Gérez vos informations publiques et votre statut de disponibilité.</p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Retour Dashboard
+        </a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="row g-5">
+        <div class="col-lg-8">
+            <div class="card bg-dark border-secondary p-4 shadow-sm">
+                <h5 class="text-white mb-4"><i class="bi bi-info-circle me-2 text-primary"></i>Informations Générales</h5>
+                
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Nom complet</label>
+                        <input type="text" name="name" class="form-control bg-secondary text-white border-0" value="{{ bio.name if bio else '' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Titre professionnel</label>
+                        <input type="text" name="title" class="form-control bg-secondary text-white border-0" value="{{ bio.title if bio else '' }}" placeholder="Ex: Fullstack Developer">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Biographie (Pitch)</label>
+                    <textarea name="bio_text" class="form-control bg-secondary text-white border-0" rows="6">{{ bio.bio_text if bio else '' }}</textarea>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Email</label>
+                        <input type="email" name="email" class="form-control bg-secondary text-white border-0" value="{{ bio.email if bio else '' }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Téléphone</label>
+                        <input type="text" name="phone" class="form-control bg-secondary text-white border-0" value="{{ bio.phone if bio else '' }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Localisation</label>
+                        <input type="text" name="location" class="form-control bg-secondary text-white border-0" value="{{ bio.location if bio else '' }}">
+                    </div>
+                </div>
+
+                <div class="mt-4 p-3 rounded bg-black d-flex align-items-center justify-content-between border border-secondary">
+                    <label class="form-check-label text-white mb-0" for="availability">
+                        <i class="bi bi-broadcast text-success me-2"></i>Disponible pour missions
+                    </label>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" name="availability" class="form-check-input" id="availability" value="1" {% if bio and bio.availability %}checked{% endif %}>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card bg-dark border-secondary p-4 mb-4 text-center">
+                <h5 class="text-white mb-4 small text-uppercase fw-bold">Photo de Profil</h5>
+                <div class="position-relative d-inline-block mb-3">
+                    {% if bio and bio.avatar %}
+                        <img src="{{ url_for('static', filename='uploads/' + bio.avatar) }}" class="rounded-circle border border-primary p-1 shadow" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto" style="width: 150px; height: 150px;">
+                            <i class="bi bi-person text-white-50 fs-1"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <input type="file" name="avatar" class="form-control form-control-sm bg-secondary border-0 text-white">
+                <p class="text-muted small mt-2">Format suggéré : Carré (1:1)</p>
+            </div>
+
+            <div class="card bg-dark border-primary p-4">
+                <button type="submit" class="btn btn-primary w-100 mb-3 py-2 fw-bold">
+                    <i class="bi bi-save me-2"></i>Enregistrer les modifications
+                </button>
+                <p class="text-muted small text-center mb-0">
+                    <i class="bi bi-info-circle me-1"></i> Les modifications seront visibles immédiatement sur votre portfolio.
+                </p>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

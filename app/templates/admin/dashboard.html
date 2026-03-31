@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 fade-up">
+    {% if is_maintenance %}
+    <div class="alert alert-danger border-0 rounded-4 mb-4 d-flex justify-content-between align-items-center shadow-sm">
+        <div>
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Mode Maintenance Actif :</strong> Le portfolio public est actuellement inaccessible aux visiteurs.
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-secondary pb-3">
+        <div>
+            <h1 class="text-white fw-bold"><i class="bi bi-speedometer2 me-2 text-primary"></i>Console de Contrôle</h1>
+            <p class="text-muted mb-0">Session active : <span class="text-primary">{{ current_user.username }}</span></p>
+        </div>
+        
+        <div class="d-flex gap-2 align-items-center">
+            <form action="{{ url_for('admin.toggle_maintenance') }}" method="POST" class="me-2">
+                <button type="submit" class="btn {{ 'btn-danger' if is_maintenance else 'btn-outline-warning' }}">
+                    <i class="bi bi-gear-wide-connected me-1"></i>
+                    {{ 'Désactiver Maintenance' if is_maintenance else 'Activer Maintenance' }}
+                </button>
+            </form>
+
+            <a href="{{ url_for('admin.bio_edit') }}" class="btn btn-info">
+                <i class="bi bi-person-bounding-box me-1"></i> Bio
+            </a>
+
+            <a href="{{ url_for('admin.testimonials') }}" class="btn btn-info">
+                <i class="bi bi-chat-quote me-1"></i> Témoignages
+            </a>
+
+            <a href="{{ url_for('admin.services') }}" class="btn btn-info">
+                <i class="bi bi-briefcase me-1"></i> Services
+            </a>
+
+            <div class="vr mx-2 opacity-25 text-white"></div> 
+            
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+                <i class="bi bi-plus-circle me-1"></i> Nouveau
+            </button>
+            
+            <a href="{{ url_for('admin.stats') }}" class="btn btn-outline-primary">
+                <i class="bi bi-graph-up me-1"></i> Stats
+            </a>
+            
+            <a href="{{ url_for('admin.benefits') }}" class="btn btn-outline-primary">
+                <i class="bi bi-gem me-1"></i> Bénéfices
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card h-100 bg-dark border-primary shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <h5 class="card-title text-muted text-uppercase small fw-bold">Visites Totales</h5>
+                    <p class="display-4 fw-bold text-white mb-0">{{ total_visits }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 bg-dark border-success shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <h5 class="card-title text-muted text-uppercase small fw-bold">Aujourd'hui</h5>
+                    <p class="display-4 fw-bold text-white mb-0">{{ visits_today }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 bg-dark border-info shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <h5 class="card-title text-muted text-uppercase small fw-bold">IP Uniques</h5>
+                    <p class="display-4 fw-bold text-white mb-0">{{ last_visits|map(attribute='ip')|unique|list|length }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 bg-dark border-warning shadow-sm position-relative">
+                <div class="card-body p-4 text-center">
+                    <h5 class="card-title text-warning text-uppercase small fw-bold">Prospects WA</h5>
+                    <p class="display-4 fw-bold text-warning mb-0">{{ wa_count }}</p>
+                    {% if wa_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success border border-dark">
+                        Live
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-7 mb-4">
+            <div class="card bg-dark border-secondary p-4 h-100">
+                <h3 class="h5 mb-4 text-white"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Activité horaire</h3>
+                <div style="height: 300px;">
+                    <canvas id="visitsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5 mb-4">
+            <div class="card bg-dark border-secondary p-4 h-100">
+                <h3 class="h5 mb-4 text-white"><i class="bi bi-terminal me-2 text-success"></i>Logs Système</h3>
+                <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                    <table class="table table-dark table-hover table-sm small">
+                        <thead class="sticky-top bg-dark">
+                            <tr class="text-muted border-secondary">
+                                <th>Page</th>
+                                <th>IP Source</th>
+                                <th class="text-end">Heure</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in last_visits %}
+                            <tr class="border-secondary">
+                                <td class="text-info">{{ v.page }}</td>
+                                <td class="text-muted font-monospace">{{ v.ip }}</td>
+                                <td class="text-end text-white-50">{{ v.timestamp.strftime('%H:%M') }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-3">Aucun log récent.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark border-secondary p-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                    <div class="mb-3 mb-md-0">
+                        <h3 class="h5 text-white mb-1"><i class="bi bi-cpu me-2 text-secondary"></i>Outils Système Avancés</h3>
+                        <p class="text-muted small mb-0">Gestion de la base de données et optimisation des performances du serveur.</p>
+                    </div>
+                    
+                    <div class="d-flex gap-3">
+                        <form action="{{ url_for('admin.clear_cache') }}" method="POST">
+                            <button type="submit" class="btn btn-outline-secondary">
+                                <i class="bi bi-lightning-charge me-1"></i> Nettoyer le Cache
+                            </button>
+                        </form>
+
+                        <form action="{{ url_for('admin.purge_logs') }}" method="POST" onsubmit="return confirm('Attention : Cette action va supprimer définitivement TOUS les logs de visites de la base de données. Continuer ?');">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-trash3 me-1"></i> Purger les Logs d'IP
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addServiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark border-primary shadow-lg">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white">Déployer un nouveau service</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('admin.service_new') }}" method="POST"> 
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small text-uppercase">Titre du service</label>
+                        <input type="text" name="title" class="form-control bg-secondary text-white border-0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small text-uppercase">Icône (Bootstrap class)</label>
+                        <input type="text" name="icon" class="form-control bg-secondary text-white border-0" placeholder="ex: bi-cpu">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small text-uppercase">Description technique</label>
+                        <textarea name="description" class="form-control bg-secondary text-white border-0" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer le service</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('visitsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ hours|tojson }},
+            datasets: [{
+                data: {{ counts|tojson }},
+                backgroundColor: '#0d6efd',
+                borderRadius: 6,
+                hoverBackgroundColor: '#60a5fa'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8' }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

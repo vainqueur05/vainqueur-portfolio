@@ -1,0 +1,204 @@
+:root {
+    --primary: #0d6efd;
+    --primary-glow: rgba(13, 110, 253, 0.25);
+    --dark-bg: #0f172a; /* Bleu nuit profond */
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+}
+
+/* --- BASE & LISIBILITÉ --- */
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    background-color: var(--dark-bg);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Force tous les textes génériques en clair */
+p, li, label, span, div:not(.vscode-footer) {
+    color: var(--text-main);
+}
+
+/* Force les titres en blanc pur */
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* --- HERO SECTION MODERNE --- */
+.hero {
+    background: radial-gradient(circle at 10% 20%, rgba(13, 110, 253, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(13, 110, 253, 0.08) 0%, transparent 40%);
+    padding: 120px 0;
+    position: relative;
+}
+
+.avatar {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    border: 4px solid var(--primary);
+    box-shadow: 0 0 30px var(--primary-glow);
+    animation: morph 8s ease-in-out infinite;
+}
+
+@keyframes morph {
+    0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+    50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
+}
+
+.typing-text {
+    font-size: 1.8rem;
+    background: linear-gradient(to right, #fff, var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+/* --- CARTES & VALEURS (GLASSMORPHISM) --- */
+.card {
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 20px;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.icon-box i {
+    filter: drop-shadow(0 0 10px currentColor);
+    transition: transform 0.3s ease;
+}
+
+.card:hover .icon-box i {
+    transform: scale(1.2) rotate(5deg);
+}
+
+/* --- SKILLS (TUILES) --- */
+.category-title {
+    color: #fff;
+    font-size: 1.1rem;
+    border-left: 3px solid var(--primary);
+    padding-left: 15px;
+}
+
+.skill-tile {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.skill-tile:hover {
+    background: rgba(13, 110, 253, 0.1);
+    border-color: var(--primary);
+}
+
+.skill-name { color: #e2e8f0; font-weight: 500; }
+.skill-percent { color: var(--primary); font-weight: 700; }
+
+.skill-progress-mini {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-top: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #60a5fa);
+    box-shadow: 0 0 8px var(--primary);
+}
+
+/* --- VS CODE EDITOR --- */
+.vscode-container {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    width: 100%;
+    max-width: 800px;
+}
+
+.vscode-header {
+    background: #323233;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+.red { background: #ff5f56; }
+.amber { background: #ffbd2e; }
+.green { background: #27c93f; }
+
+.tab { color: #969696; font-size: 13px; margin-left: 15px; }
+
+.vscode-body { padding: 20px; background: #1e1e1e; min-height: 220px; }
+
+.boot-logs { font-family: 'Consolas', monospace; font-size: 0.85rem; color: #a9b7c6; }
+
+.matrix-text {
+    color: #00ff41;
+    font-family: 'Courier New', monospace;
+    height: 40px;
+    text-shadow: 0 0 5px #00ff41;
+}
+
+.progress-container { height: 4px; background: #333; margin-top: 10px; border-radius: 2px; }
+.boot-progress { height: 100%; background: var(--primary); width: 0%; box-shadow: 0 0 10px var(--primary); }
+
+#typewriter { color: #9cdcfe; font-family: 'Consolas', monospace; }
+.cursor { color: var(--primary); animation: blink 1s infinite; }
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.vscode-footer {
+    background: #007acc;
+    color: white !important;
+    font-size: 11px;
+    padding: 3px 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.vscode-footer span, .vscode-footer i { color: white !important; }
+
+/* --- BOUTONS --- */
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    background: #1a7bff;
+}
+
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--dark-bg); }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }

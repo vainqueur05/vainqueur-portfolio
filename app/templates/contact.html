@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact - Kairos Portfolio{% endblock %}
+
+{% block content %}
+<div class="container py-5 fade-up">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-white">Prêt à lancer votre projet ?</h1>
+        <p class="lead text-muted">Transformons votre vision en une solution numérique performante.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card p-4 h-100 shadow-lg border-primary">
+                <h3 class="category-title mb-4">Canal de Réponse Prioritaire</h3>
+                <div class="row g-4 mt-2">
+                    <div class="col-6 text-center">
+                        <i class="bi bi-clock-history fs-1 text-primary mb-2"></i>
+                        <h6 class="mb-0 text-white">Chiffrage Express</h6>
+                        <p class="small text-muted">Devis détaillé < 24h</p>
+                    </div>
+                    <div class="col-6 text-center">
+                        <i class="bi bi-people-fill fs-1 text-primary mb-2"></i>
+                        <h6 class="mb-0 text-white">Lien Direct</h6>
+                        <p class="small text-muted">Zéro intermédiaire</p>
+                    </div>
+                    <div class="col-6 text-center">
+                        <a href="{{ url_for('main.whatsapp_redirect') }}" class="text-decoration-none" target="_blank">
+                            <i class="bi bi-whatsapp fs-1 text-success mb-2"></i>
+                            <h6 class="mb-0 text-white">Hotline Instantanée</h6>
+                            <p class="small text-muted">Réponse immédiate</p>
+                        </a>
+                    </div>
+                    <div class="col-6 text-center">
+                        <i class="bi bi-envelope-check-fill fs-1 text-info mb-2"></i>
+                        <h6 class="mb-0 text-white">Expertise Formelle</h6>
+                        <p class="small text-muted">Email professionnel</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4 h-100 shadow-lg">
+                <h3 class="category-title mb-4">Le Workflow Kairos</h3>
+                <div class="mt-2">
+                    <div class="mb-4 d-flex align-items-start">
+                        <i class="bi bi-chat-left-dots-fill text-primary me-3 fs-4"></i>
+                        <div>
+                            <h6 class="text-white mb-1">1. Initialisation</h6>
+                            <p class="small text-muted mb-0">Définition du périmètre et de vos objectifs business.</p>
+                        </div>
+                    </div>
+                    <div class="mb-4 d-flex align-items-start">
+                        <i class="bi bi-diagram-3-fill text-primary me-3 fs-4"></i>
+                        <div>
+                            <h6 class="text-white mb-1">2. Architecture & Devis</h6>
+                            <p class="small text-muted mb-0">Structure technique et proposition budgétaire transparente.</p>
+                        </div>
+                    </div>
+                    <div class="mb-4 d-flex align-items-start">
+                        <i class="bi bi-code-square text-primary me-3 fs-4"></i>
+                        <div>
+                            <h6 class="text-white mb-1">3. Sprint de Création</h6>
+                            <p class="small text-muted mb-0">Développement agile et validations itératives.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-rocket-takeoff-fill text-primary me-3 fs-4"></i>
+                        <div>
+                            <h6 class="text-white mb-1">4. Déploiement</h6>
+                            <p class="small text-muted mb-0">Mise en ligne optimisée et support technique continu.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 g-4">
+        <div class="col-md-6">
+            <div class="card p-4 h-100 border-0 bg-transparent">
+                <h3 class="mb-4">Démarrer maintenant</h3>
+                <div class="d-grid gap-3">
+                    <a href="{{ url_for('main.whatsapp_redirect') }}" class="btn btn-success btn-lg py-3 shadow" target="_blank">
+                        <i class="bi bi-whatsapp me-2"></i> Lancer la discussion WhatsApp
+                    </a>
+                    <a href="mailto:vainqueurkalema035@gmail.com" class="btn btn-primary btn-lg py-3 shadow">
+                        <i class="bi bi-envelope me-2"></i> Envoyer un Email Pro
+                    </a>
+                    <a href="tel:+243895288981" class="btn btn-outline-light btn-lg py-3">
+                        <i class="bi bi-phone me-2"></i> Appels Directs
+                    </a>
+                </div>
+                
+                <div class="mt-5 text-center">
+                    <h5 class="mb-3 text-muted small text-uppercase fw-bold">Réseaux Professionnels</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="https://github.com/Vainqueur-Kalema" target="_blank" class="btn btn-outline-primary rounded-circle"><i class="bi bi-github"></i></a>
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4 h-100 border-primary" style="background: rgba(13, 110, 253, 0.05);">
+                <h3 class="mb-4">Coordonnées Officielles</h3>
+                <div class="mb-3 d-flex align-items-center">
+                    <i class="bi bi-geo-alt-fill text-primary fs-4 me-3"></i>
+                    <div>
+                        <span class="d-block fw-bold text-white">Lubumbashi, RDC</span>
+                        <small class="text-muted">Disponible pour des missions internationales.</small>
+                    </div>
+                </div>
+                <div class="mb-3 d-flex align-items-center">
+                    <i class="bi bi-envelope-at-fill text-primary fs-4 me-3"></i>
+                    <span class="text-white">vainqueurkalema035@gmail.com</span>
+                </div>
+                <div class="mb-4 d-flex align-items-center">
+                    <i class="bi bi-broadcast text-primary fs-4 me-3"></i>
+                    <span class="text-white">+243 895 288 981</span>
+                </div>
+                <hr class="border-secondary opacity-25">
+                <div class="p-3 rounded bg-dark">
+                    <p class="mb-0 small italic text-muted text-center">
+                        <i class="bi bi-info-circle me-1"></i> 
+                        Vous recevrez une réponse dans un délai maximum de 24 heures ouvrées.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

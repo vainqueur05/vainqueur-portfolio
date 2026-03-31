@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5 fade-up">
+    <form method="POST" enctype="multipart/form-data" class="row g-4">
+        <div class="col-lg-8">
+            <div class="card bg-dark border-secondary p-4">
+                <h2 class="text-white mb-4">{{ 'Modifier' if project else 'Nouveau' }} Projet</h2>
+                <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Titre du projet</label>
+                    <input type="text" name="title" class="form-control bg-secondary text-white border-0" value="{{ project.title if project else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Description</label>
+                    <textarea name="description" class="form-control bg-secondary text-white border-0" rows="5">{{ project.description if project else '' }}</textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">GitHub Link</label>
+                        <input type="url" name="source_link" class="form-control bg-secondary text-white border-0" value="{{ project.source_link if project else '' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Live Demo</label>
+                        <input type="url" name="demo_link" class="form-control bg-secondary text-white border-0" value="{{ project.demo_link if project else '' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card bg-dark border-secondary p-4 mb-4">
+                <label class="form-label text-muted small text-uppercase fw-bold">Cover Image</label>
+                {% if project and project.image %}
+                    <img src="{{ url_for('static', filename='uploads/' + project.image) }}" class="img-fluid rounded border border-primary mb-3">
+                {% endif %}
+                <input type="file" name="image" class="form-control form-control-sm bg-secondary text-white border-0">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">Sauvegarder</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

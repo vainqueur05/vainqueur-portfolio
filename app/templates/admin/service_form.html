@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Édition' if service else 'Configuration' }} Service | Portfolio{% endblock %}
+
+{% block extra_head %}
+<style>
+    .service-editor-container {
+        max-width: 800px;
+        margin: 40px auto;
+    }
+
+    .editor-card {
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 40px;
+        position: relative;
+    }
+
+    /* Décoration style "Blueprint" */
+    .editor-card::before {
+        content: 'SERVICE_CONFIG_V2';
+        position: absolute;
+        top: -10px;
+        right: 20px;
+        background: var(--k-gold);
+        color: #000;
+        font-size: 0.6rem;
+        font-weight: 800;
+        padding: 2px 10px;
+        letter-spacing: 1px;
+    }
+
+    .form-label {
+        color: var(--k-gold);
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.02) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 0 !important;
+        color: white !important;
+        padding: 12px 15px;
+        transition: 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--k-gold) !important;
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.05) !important;
+    }
+
+    /* Preview de l'icône en temps réel */
+    .icon-preview-box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(212, 175, 55, 0.1);
+        border: 1px dashed var(--k-gold);
+        color: var(--k-gold);
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .btn-save {
+        background: var(--k-gold);
+        color: #000;
+        border: none;
+        border-radius: 0;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        padding: 15px 30px;
+        transition: 0.4s;
+    }
+
+    .btn-save:hover {
+        background: #fff;
+        transform: translateY(-3px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container service-editor-container animate__animated animate__fadeIn">
+    <div class="mb-5">
+        <span class="text-muted small text-uppercase letter-spacing-2">Catalogue de Compétences</span>
+        <h2 class="text-white fw-bold">{{ 'Modifier le' if service else 'Nouveau' }} Service Professionnel</h2>
+    </div>
+
+    <div class="editor-card">
+        <form method="POST">
+            <div class="mb-4">
+                <label class="form-label">Titre du Service</label>
+                <input type="text" name="title" class="form-control" 
+                       placeholder="ex: Développement Full-Stack Flask"
+                       value="{{ service.title if service else '' }}" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Description Détaillée</label>
+                <textarea name="description" class="form-control" rows="5" 
+                          placeholder="Décrivez la valeur ajoutée de votre prestation...">{{ service.description if service else '' }}</textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Icône Bootstrap</label>
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="icon-preview-box" id="iconPreview">
+                            <i class="bi {{ service.icon if service else 'bi-code-slash' }}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <input type="text" name="icon" id="iconInput" class="form-control" 
+                                   value="{{ service.icon if service else 'bi-code-slash' }}">
+                            <small class="text-muted" style="font-size: 0.6rem;">Ex: bi-layers, bi-cpu, bi-database</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Tarification (Base)</label>
+                    <div class="input-group">
+                        <input type="text" name="price" class="form-control" 
+                               placeholder="ex: 500"
+                               value="{{ service.price if service else '' }}">
+                        <span class="input-group-text bg-transparent border-secondary text-gold">$</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Délai d'exécution (Jours estimatifs)</label>
+                    <input type="number" name="delivery_days" class="form-control" 
+                           value="{{ service.delivery_days if service else 0 }}">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top border-secondary border-opacity-10">
+                <a href="{{ url_for('admin.services') }}" class="text-muted text-decoration-none small text-uppercase fw-bold">
+                    <i class="bi bi-x-lg me-1"></i> Annuler
+                </a>
+                <button type="submit" class="btn btn-save">
+                    <i class="bi bi-check2-all me-2"></i> Enregistrer le service
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('iconInput').addEventListener('input', function(e) {
+        const iconName = e.target.value.trim();
+        const previewIcon = document.querySelector('#iconPreview i');
+        previewIcon.className = 'bi ' + iconName;
+    });
+</script>
+{% endblock %}

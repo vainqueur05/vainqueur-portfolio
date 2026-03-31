@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5 fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-secondary pb-3">
+        <h1 class="text-white fw-bold"><i class="bi bi-cpu me-2 text-success"></i>Skills Stack</h1>
+        <a href="{{ url_for('admin.skill_new') }}" class="btn btn-success text-white"><i class="bi bi-plus-lg me-1"></i> Ajouter Skill</a>
+    </div>
+
+    <div class="row g-3">
+        {% for s in skills %}
+        <div class="col-md-4 col-lg-3">
+            <div class="card bg-dark border-secondary shadow-sm">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-white fw-bold">{{ s.name }}</span>
+                        <span class="text-success small">{{ s.level }}%</span>
+                    </div>
+                    <div class="progress bg-black" style="height: 4px;">
+                        <div class="progress-bar bg-success" style="width: {{ s.level }}%"></div>
+                    </div>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="{{ url_for('admin.skill_edit', id=s.id) }}" class="text-warning text-decoration-none small">Modifier</a>
+                        <form action="{{ url_for('admin.skill_delete', id=s.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-link text-danger p-0 small text-decoration-none" onclick="return confirm('Supprimer ?')">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

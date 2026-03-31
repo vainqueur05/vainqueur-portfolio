@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ 'Modifier' if skill else 'Ajouter' }} une compétence</h1>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <input type="text" name="name" class="form-control" value="{{ skill.name if skill else '' }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Catégorie (frontend, backend, outils, ai)</label>
+            <input type="text" name="category" class="form-control" value="{{ skill.category if skill else '' }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Niveau (%)</label>
+            <input type="number" name="percentage" class="form-control" min="0" max="100" value="{{ skill.percentage if skill else 0 }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <a href="{{ url_for('admin.skills') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

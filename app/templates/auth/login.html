@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="loader-overlay" class="loader-wrapper">
+    <div class="terminal-loader">
+        <div class="terminal-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="status-text">KAIROS_OS_INIT...</span>
+        </div>
+        <div class="terminal-body font-monospace small">
+            <p id="typed-text"></p>
+            <div class="progress bg-dark mt-2" style="height: 5px; border: 1px solid #0d6efd;">
+                <div id="progress-bar" class="progress-bar bg-primary progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5 fade-in-delayed">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card bg-black border-primary shadow-lg overflow-hidden">
+                <div class="card-header bg-dark border-bottom border-primary py-3">
+                    <h5 class="mb-0 text-white font-monospace text-center">
+                        <i class="bi bi-shield-lock-fill text-primary me-2"></i>ACCÈS_RESTREINT
+                    </h5>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" id="login-form">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-muted small font-monospace">IDENTIFIANT_SYSTÈME</label>
+                            {{ form.email(class="form-control bg-dark text-primary border-secondary font-monospace", placeholder="user@kairos.core") }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-muted small font-monospace">CLÉ_CHIFFRÉE</label>
+                            {{ form.password(class="form-control bg-dark text-primary border-secondary font-monospace", placeholder="••••••••") }}
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-outline-primary fw-bold font-monospace py-2">
+                                <i class="bi bi-unlock me-2"></i>DÉVERROUILLER
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-dark border-top border-secondary py-2 text-center">
+                    <small class="text-muted font-monospace opacity-50">KAIROS SECURITY PROTOCOL v4.0</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Style global et Fond */
+body {
+    background-color: #050505 !important;
+    background-image: radial-gradient(#0d6efd10 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Loader Wrapper */
+.loader-wrapper {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+/* Terminal Look */
+.terminal-loader {
+    width: 350px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 0 20px rgba(13, 110, 253, 0.2);
+}
+
+.terminal-header {
+    background: #222;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid #333;
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.red { background: #ff5f56; }
+.yellow { background: #ffbd2e; }
+.green { background: #27c93f; }
+.status-text { color: #666; font-size: 10px; font-family: monospace; margin-left: auto; }
+
+.terminal-body { padding: 15px; color: #0d6efd; min-height: 80px; }
+
+/* Animation du texte de connexion */
+.fade-in-delayed {
+    animation: fadeIn 1s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Inputs Hacker */
+.form-control:focus {
+    background-color: #0a0a0a !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.3);
+    color: #fff !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const loader = document.getElementById('loader-overlay');
+    const typedText = document.getElementById('typed-text');
+    const progressBar = document.getElementById('progress-bar');
+    
+    const logs = [
+        "> INITIALIZING BOOT_SEQUENCE...",
+        "> LOADING KAIROS_CORE...",
+        "> ESTABLISHING ENCRYPTED_TUNNEL...",
+        "> BYPASSING FIREWALL...",
+        "> ACCESS GRANTED."
+    ];
+
+    let logIndex = 0;
+    let progress = 0;
+
+    // Simulation du chargement
+    const interval = setInterval(() => {
+        if (logIndex < logs.length) {
+            typedText.innerHTML = logs[logIndex];
+            logIndex++;
+            progress += 25;
+            progressBar.style.width = progress + '%';
+        } else {
+            clearInterval(interval);
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 500);
+        }
+    }, 400);
+});
+</script>
+{% endblock %}

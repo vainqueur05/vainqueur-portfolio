@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 fade-up">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card bg-dark border-secondary p-4 p-md-5 shadow-lg">
+                <div class="text-center mb-4">
+                    <div class="bg-primary d-inline-block p-3 rounded-circle mb-3">
+                        <i class="bi bi-gem text-white fs-4"></i>
+                    </div>
+                    <h2 class="text-white fw-bold">{{ 'Mise à jour' if benefit else 'Nouveau' }} Bénéfice</h2>
+                    <p class="text-muted small">Définissez un avantage compétitif pour vos clients.</p>
+                </div>
+
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Titre de la valeur</label>
+                        <input type="text" name="title" class="form-control bg-secondary text-white border-0 py-2" 
+                               placeholder="Ex: Livraison ultra-rapide" value="{{ benefit.title if benefit else '' }}" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Icône Bootstrap</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-black border-0 text-primary"><i class="bi bi-search"></i></span>
+                            <input type="text" name="icon" class="form-control bg-secondary text-white border-0 py-2" 
+                                   placeholder="bi-lightning-charge" value="{{ benefit.icon if benefit else 'bi-star' }}">
+                        </div>
+                        <div class="form-text text-muted-50 small mt-2">Référence : <a href="https://icons.getbootstrap.com/" target="_blank" class="text-info text-decoration-none">Bootstrap Icons</a></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Description détaillée</label>
+                        <textarea name="description" class="form-control bg-secondary text-white border-0" 
+                                  rows="4" placeholder="Expliquez l'avantage en quelques lignes...">{{ benefit.description if benefit else '' }}</textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold">Enregistrer le bénéfice</button>
+                        <a href="{{ url_for('admin.benefits') }}" class="btn btn-outline-light border-0 text-muted">Annuler et revenir</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

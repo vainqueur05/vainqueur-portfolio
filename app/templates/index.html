@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Accueil - Kairos Portfolio{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <div class="avatar-container mb-3">
+                    <img src="{{ url_for('static', filename='uploads/' + bio.avatar) if bio.avatar else url_for('static', filename='images/avatar.jpg') }}" alt="Photo" class="avatar">
+                </div>
+                <h1>{{ bio.name }}</h1>
+                <div class="typing-text mb-3"></div>
+                <div class="mb-3">
+                    {% if bio.availability %}
+                        <span class="availability"></span> Disponible pour missions
+                    {% else %}
+                        <span class="availability"></span> Indisponible
+                    {% endif %}
+                </div>
+                <p class="lead">{{ bio.bio_text }}</p>
+                <div class="mt-4">
+                    <a href="{{ url_for('main.whatsapp_redirect') }}" target="_blank" class="btn btn-primary btn-lg me-3 shadow">Démarrer un projet</a>
+                    <a href="{{ url_for('main.services') }}" class="btn btn-outline-primary btn-lg">Voir mes offres</a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row g-3 mt-4 mt-md-0">
+                    <div class="col-4 text-center">
+                        <i class="bi bi-code-slash display-4 text-primary"></i>
+                        <p>Code propre</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <i class="bi bi-clock-history display-4 text-primary"></i>
+                        <p>Réactivité 24/7</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <i class="bi bi-chat-dots display-4 text-primary"></i>
+                        <p>Communication fluide</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5 fade-up">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <h2 class="section-title">Comprendre vos besoins pour mieux vous servir</h2>
+            <p class="lead">Écouter pour comprendre, conseiller pour optimiser, créer pour impacter. Je transforme vos défis en produits digitaux de haute précision.</p>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5 fade-up">
+    <h2 class="section-title text-center">Quelques chiffres</h2>
+    <div class="row text-center g-4">
+        {% for stat in stats %}
+        <div class="col-md-3">
+            <i class="bi {{ stat.icon }} display-3 text-primary"></i>
+            <h3 class="mt-2">{{ stat.value }}</h3>
+            <p>{{ stat.label }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="container py-5 fade-up">
+    <h2 class="section-title">Ce que je peux faire pour vous</h2>
+    <div class="row g-4">
+        {% for service in services %}
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <i class="bi {{ service.icon }} service-icon"></i>
+                <h3 class="h4 mt-3">{{ service.title }}</h3>
+                <p>{{ service.description }}</p>
+                <a href="{{ url_for('main.services') }}" class="btn btn-outline-primary mt-3">Voir l'offre</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="container py-5 fade-up">
+    <h2 class="section-title">Mes réalisations</h2>
+    <div class="row g-4">
+        {% for project in projects %}
+        <div class="col-md-4">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='uploads/' + project.image) if project.image else url_for('static', filename='images/default-project.jpg') }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ project.title }}</h5>
+                    <p class="card-text">{{ project.description[:100] }}...</p>
+                    <a href="{{ url_for('main.project_detail', id=project.id) }}" class="btn btn-primary">Voir détails</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="container py-5 fade-up">
+    <h2 class="section-title">Mes compétences</h2>
+    <div class="row g-4">
+        {% set grouped = {} %}
+        {% for skill in skills %}
+            {% set category = skill.category %}
+            {% if category not in grouped %}
+                {% set _ = grouped.update({category: []}) %}
+            {% endif %}
+            {% set _ = grouped[category].append(skill) %}
+        {% endfor %}
+        {% for cat, skills_list in grouped.items() %}
+        <div class="col-md-6">
+            <h4 class="category-title mb-4"><i class="bi bi-layers me-2"></i>{{ cat|capitalize }}</h4>
+            <div class="d-flex flex-wrap gap-3">
+                {% for skill in skills_list %}
+                <div class="skill-tile">
+                    <div class="skill-info">
+                        <span class="skill-name">{{ skill.name }}</span>
+                        <span class="skill-percent">{{ skill.percentage }}%</span>
+                    </div>
+                    <div class="skill-progress-mini">
+                        <div class="progress-fill" style="width: {{ skill.percentage }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="container py-5 fade-up mb-5">
+    <h2 class="section-title">Parlons de votre projet</h2>
+    <div class="row g-4 text-center">
+        <div class="col-md-6">
+            <a href="{{ url_for('main.whatsapp_redirect') }}" class="btn btn-success btn-lg w-100 py-3 shadow" target="_blank">
+                <i class="bi bi-whatsapp me-2"></i> WhatsApp Business
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="mailto:vainqueurkalema035@gmail.com" class="btn btn-primary btn-lg w-100 py-3 shadow">
+                <i class="bi bi-envelope me-2"></i> Email Professionnel
+            </a>
+        </div>
+    </div>
+</section>
+
+<a href="{{ url_for('main.whatsapp_redirect') }}" target="_blank" class="wa-float-btn shadow-lg" title="Discuter sur WhatsApp">
+    <i class="bi bi-whatsapp"></i>
+</a>
+
+<style>
+.wa-float-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #25d366;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    z-index: 9999;
+    text-decoration: none;
+    transition: 0.3s;
+    animation: pulse-wa 2s infinite;
+}
+.wa-float-btn:hover { transform: scale(1.1); color: #fff; }
+@keyframes pulse-wa {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+</style>
+{% endblock %}
