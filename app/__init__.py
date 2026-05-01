@@ -17,6 +17,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+
+    @app.route('/health')
+    def health():
+        return 'ok', 200
+    
     # Initialisation
     db.init_app(app)
     migrate.init_app(app, db)
