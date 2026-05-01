@@ -1,39 +1,92 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="container mt-5 fade-up">
+<style>
+    /* On garde la cohérence avec ton dashboard pour le décalage de la navbar */
+    body { padding-top: 100px; background-color: #050505 !important; color: #f0f0f0; }
+    .form-control:focus { background-color: #2b2b2b !important; box-shadow: none; border: 1px solid #0d6efd !important; }
+    .card { border-radius: 16px; }
+</style>
+
+<div class="container mt-2 fade-up">
     <form method="POST" enctype="multipart/form-data" class="row g-4">
         <div class="col-lg-8">
-            <div class="card bg-dark border-secondary p-4">
-                <h2 class="text-white mb-4">{{ 'Modifier' if project else 'Nouveau' }} Projet</h2>
-                <div class="mb-3">
+            <div class="card bg-dark border-secondary p-4 shadow-lg">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                        <i class="bi bi-folder-plus text-primary fs-4"></i>
+                    </div>
+                    <h2 class="text-white h4 m-0">{{ 'Modifier' if project else 'Nouveau' }} Projet</h2>
+                </div>
+
+                <div class="mb-4">
                     <label class="form-label text-muted small text-uppercase fw-bold">Titre du projet</label>
-                    <input type="text" name="title" class="form-control bg-secondary text-white border-0" value="{{ project.title if project else '' }}" required>
+                    <input type="text" name="title" class="form-control bg-secondary text-white border-0 p-3" value="{{ project.title if project else '' }}" placeholder="Ex: Kairos Finance" required>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label text-muted small text-uppercase fw-bold">Description</label>
-                    <textarea name="description" class="form-control bg-secondary text-white border-0" rows="5">{{ project.description if project else '' }}</textarea>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Client / Organisation</label>
+                        <input type="text" name="client" class="form-control bg-secondary text-white border-0 p-3" value="{{ project.client if project else '' }}" placeholder="Ex: Jason Sendwe Hospital">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small text-uppercase fw-bold">Année de réalisation</label>
+                        <input type="number" name="year" class="form-control bg-secondary text-white border-0 p-3" value="{{ project.year if project else '2026' }}" min="2010" max="2099">
+                    </div>
                 </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Technologies utilisées</label>
+                    <input type="text" name="technologies" class="form-control bg-secondary text-white border-0 p-3" value="{{ project.technologies if project else '' }}" placeholder="Ex: Python, Flask, PostgreSQL, Chart.js">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Description détaillée</label>
+                    <textarea name="description" class="form-control bg-secondary text-white border-0 p-3" rows="6" placeholder="Expliquez les défis techniques relevés...">{{ project.description if project else '' }}</textarea>
+                </div>
+
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label text-muted small text-uppercase fw-bold">GitHub Link</label>
-                        <input type="url" name="source_link" class="form-control bg-secondary text-white border-0" value="{{ project.source_link if project else '' }}">
+                        <label class="form-label text-muted small text-uppercase fw-bold"><i class="bi bi-github me-2"></i>GitHub Link</label>
+                        <input type="url" name="source_link" class="form-control bg-secondary text-white border-0 p-3" value="{{ project.source_link if project else '' }}" placeholder="https://github.com/vainqueur/...">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Live Demo</label>
-                        <input type="url" name="demo_link" class="form-control bg-secondary text-white border-0" value="{{ project.demo_link if project else '' }}">
+                        <label class="form-label text-muted small text-uppercase fw-bold"><i class="bi bi-globe me-2"></i>Live Demo</label>
+                        <input type="url" name="demo_link" class="form-control bg-secondary text-white border-0 p-3" value="{{ project.demo_link if project else '' }}" placeholder="https://kairos-app.vercel.app">
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="col-lg-4">
-            <div class="card bg-dark border-secondary p-4 mb-4">
-                <label class="form-label text-muted small text-uppercase fw-bold">Cover Image</label>
-                {% if project and project.image %}
-                    <img src="{{ url_for('static', filename='uploads/' + project.image) }}" class="img-fluid rounded border border-primary mb-3">
-                {% endif %}
+            <div class="card bg-dark border-secondary p-4 mb-4 shadow-sm text-center">
+                <label class="form-label text-muted small text-uppercase fw-bold mb-3 d-block">Image de couverture</label>
+                <div class="mb-3">
+                    {% if project and project.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + project.image) }}" class="img-fluid rounded border border-primary border-opacity-50 mb-3 shadow">
+                    {% else %}
+                        <div class="py-5 bg-secondary bg-opacity-10 rounded border border-dashed border-secondary mb-3">
+                            <i class="bi bi-image text-muted fs-1"></i>
+                        </div>
+                    {% endif %}
+                </div>
                 <input type="file" name="image" class="form-control form-control-sm bg-secondary text-white border-0">
+                <p class="text-muted small mt-2 italic">Format recommandé : 16:9 (JPG, PNG)</p>
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">Sauvegarder</button>
+
+            <div class="card bg-dark border-secondary p-4 mb-4">
+                <label class="form-label text-muted small text-uppercase fw-bold">Statut du projet</label>
+                <select name="status" class="form-select bg-secondary text-white border-0 p-2">
+                    <option value="Terminé" {{ 'selected' if project and project.status == 'Terminé' else '' }}>✅ Terminé</option>
+                    <option value="En cours" {{ 'selected' if project and project.status == 'En cours' else '' }}>🚀 En cours</option>
+                    <option value="Maintenance" {{ 'selected' if project and project.status == 'Maintenance' else '' }}>🛠️ Maintenance</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow">
+                <i class="bi bi-save me-2"></i> Sauvegarder le projet
+            </button>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-link w-100 text-muted mt-2 text-decoration-none small">Annuler</a>
         </div>
     </form>
 </div>

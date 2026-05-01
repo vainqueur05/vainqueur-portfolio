@@ -1,48 +1,168 @@
 {% extends 'base.html' %}
 
+{% block title %}Gestion des Bénéfices | Kairos Admin{% endblock %}
+
 {% block content %}
-<div class="container mt-5 fade-up">
+<style>
+    .admin-container { padding-top: 100px; padding-bottom: 80px; }
+    
+    .glass-form-card {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 30px;
+        padding: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .form-label-premium {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--primary);
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .input-studio {
+        background: rgba(0, 0, 0, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 15px !important;
+        padding: 12px 20px;
+        transition: all 0.3s ease;
+    }
+
+    .input-studio:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.1) !important;
+        outline: none;
+    }
+
+    .icon-preview-box {
+        width: 60px;
+        height: 60px;
+        background: rgba(0, 240, 255, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    .btn-admin-save {
+        background: var(--primary);
+        color: #000;
+        border: none;
+        border-radius: 15px;
+        padding: 15px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-admin-save:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 240, 255, 0.2);
+        background: #00d1e0;
+    }
+
+    .breadcrumb-admin { font-size: 0.85rem; }
+    .breadcrumb-admin a { color: #a1a1aa; text-decoration: none; transition: 0.3s; }
+    .breadcrumb-admin a:hover { color: var(--primary); }
+</style>
+
+<div class="container admin-container">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card bg-dark border-secondary p-4 p-md-5 shadow-lg">
-                <div class="text-center mb-4">
-                    <div class="bg-primary d-inline-block p-3 rounded-circle mb-3">
-                        <i class="bi bi-gem text-white fs-4"></i>
+        <div class="col-lg-7">
+            
+            <nav class="breadcrumb-admin mb-4 gs-reveal">
+                <a href="{{ url_for('admin.dashboard') }}">Dashboard</a> 
+                <span class="mx-2 text-muted">/</span> 
+                <a href="{{ url_for('admin.benefits') }}">Bénéfices</a>
+                <span class="mx-2 text-muted">/</span>
+                <span class="text-white">{{ 'Édition' if benefit else 'Création' }}</span>
+            </nav>
+
+            <div class="glass-form-card gs-reveal">
+                <div class="d-flex align-items-center gap-4 mb-5">
+                    <div class="icon-preview-box">
+                        <i id="icon-preview" class="bi {{ benefit.icon if benefit else 'bi-gem' }} fs-3 text-primary"></i>
                     </div>
-                    <h2 class="text-white fw-bold">{{ 'Mise à jour' if benefit else 'Nouveau' }} Bénéfice</h2>
-                    <p class="text-muted small">Définissez un avantage compétitif pour vos clients.</p>
+                    <div>
+                        <h2 class="text-white fw-bold mb-1">{{ 'Mettre à jour' if benefit else 'Nouveau' }} Bénéfice</h2>
+                        <p class="text-secondary small mb-0">Définissez une valeur ajoutée pour l'ADN Kairos.</p>
+                    </div>
                 </div>
 
                 <form method="POST">
-                    <div class="mb-4">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Titre de la valeur</label>
-                        <input type="text" name="title" class="form-control bg-secondary text-white border-0 py-2" 
-                               placeholder="Ex: Livraison ultra-rapide" value="{{ benefit.title if benefit else '' }}" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Icône Bootstrap</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-black border-0 text-primary"><i class="bi bi-search"></i></span>
-                            <input type="text" name="icon" class="form-control bg-secondary text-white border-0 py-2" 
-                                   placeholder="bi-lightning-charge" value="{{ benefit.icon if benefit else 'bi-star' }}">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label-premium">Titre de l'avantage</label>
+                            <input type="text" name="title" class="form-control input-studio" 
+                                   placeholder="Ex: Clarté Radicale" 
+                                   value="{{ benefit.title if benefit else '' }}" required>
                         </div>
-                        <div class="form-text text-muted-50 small mt-2">Référence : <a href="https://icons.getbootstrap.com/" target="_blank" class="text-info text-decoration-none">Bootstrap Icons</a></div>
-                    </div>
 
-                    <div class="mb-4">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Description détaillée</label>
-                        <textarea name="description" class="form-control bg-secondary text-white border-0" 
-                                  rows="4" placeholder="Expliquez l'avantage en quelques lignes...">{{ benefit.description if benefit else '' }}</textarea>
-                    </div>
+                        <div class="col-md-12">
+                            <label class="form-label-premium">Icône Bootstrap</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-0 ps-0 text-secondary">
+                                    <i class="bi bi-terminal"></i>
+                                </span>
+                                <input type="text" name="icon" id="icon-input" class="form-control input-studio" 
+                                       placeholder="bi-lightning-charge" 
+                                       value="{{ benefit.icon if benefit else 'bi-star' }}">
+                            </div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-muted">Code : <a href="https://icons.getbootstrap.com/" target="_blank" class="text-primary text-decoration-none">icons.getbootstrap.com</a></small>
+                                <small class="text-muted fst-italic">Ex: bi-cpu, bi-shield-check</small>
+                            </div>
+                        </div>
 
-                    <div class="d-grid gap-2 mt-5">
-                        <button type="submit" class="btn btn-primary btn-lg fw-bold">Enregistrer le bénéfice</button>
-                        <a href="{{ url_for('admin.benefits') }}" class="btn btn-outline-light border-0 text-muted">Annuler et revenir</a>
+                        <div class="col-12">
+                            <label class="form-label-premium">Description de l'engagement</label>
+                            <textarea name="description" class="form-control input-studio" 
+                                      rows="5" placeholder="Décrivez comment cet avantage profite à vos clients..." required>{{ benefit.description if benefit else '' }}</textarea>
+                        </div>
+
+                        <div class="col-12 mt-5">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <button type="submit" class="btn btn-admin-save w-100">
+                                        <i class="bi bi-cloud-arrow-up-fill me-2"></i> Enregistrer dans la base
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('admin.benefits') }}" class="btn btn-outline-secondary w-100 py-3 border-0 rounded-4 text-uppercase fw-bold small">
+                                        Annuler
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Animation GSAP
+        gsap.from(".gs-reveal", { y: 30, opacity: 0, duration: 0.8, stagger: 0.2 });
+
+        // Preview de l'icône en temps réel
+        const iconInput = document.getElementById('icon-input');
+        const iconPreview = document.getElementById('icon-preview');
+
+        iconInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if(val.startsWith('bi-')) {
+                iconPreview.className = `bi ${val} fs-3 text-primary`;
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -1,31 +1,110 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="container mt-5 fade-up">
-    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-secondary pb-3">
-        <h1 class="text-white fw-bold"><i class="bi bi-cpu me-2 text-success"></i>Skills Stack</h1>
-        <a href="{{ url_for('admin.skill_new') }}" class="btn btn-success text-white"><i class="bi bi-plus-lg me-1"></i> Ajouter Skill</a>
+<style>
+    /* Ajustement pour la Navbar */
+    body { padding-top: 100px; background-color: #050505 !important; color: #f0f0f0; }
+
+    .skill-card {
+        background: rgba(25, 25, 25, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+
+    .skill-card:hover {
+        border-color: #198754; /* Success color */
+        transform: translateY(-3px);
+        background: rgba(25, 25, 25, 0.8);
+    }
+
+    .skill-icon {
+        width: 35px;
+        height: 35px;
+        background: rgba(25, 135, 84, 0.1);
+        color: #198754;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .progress-custom {
+        height: 4px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .progress-glow {
+        box-shadow: 0 0 8px rgba(25, 135, 84, 0.5);
+    }
+
+    .action-link {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        opacity: 0.5;
+        transition: 0.2s;
+    }
+    .action-link:hover { opacity: 1; }
+</style>
+
+<div class="container mt-2 fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-white border-opacity-10 pb-4">
+        <div>
+            <h1 class="text-white fw-bold m-0"><i class="bi bi-cpu me-2 text-success"></i>Skills Stack</h1>
+            <p class="text-muted small m-0 mt-1">Niveau d'expertise technique</p>
+        </div>
+        <a href="{{ url_for('admin.skill_new') }}" class="btn btn-success px-4 py-2 fw-bold rounded-3 shadow">
+            <i class="bi bi-plus-lg me-1"></i> Ajouter Skill
+        </a>
     </div>
 
     <div class="row g-3">
         {% for s in skills %}
-        <div class="col-md-4 col-lg-3">
-            <div class="card bg-dark border-secondary shadow-sm">
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="skill-card shadow-sm h-100">
                 <div class="card-body p-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-white fw-bold">{{ s.name }}</span>
-                        <span class="text-success small">{{ s.level }}%</span>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="skill-icon">
+                            <i class="bi {{ s.icon if s.icon else 'bi-terminal' }}"></i>
+                        </div>
+                        <span class="text-success font-monospace" style="font-size: 0.75rem;">{{ s.level }}%</span>
                     </div>
-                    <div class="progress bg-black" style="height: 4px;">
-                        <div class="progress-bar bg-success" style="width: {{ s.level }}%"></div>
+
+                    <h6 class="text-white fw-bold mb-3" style="font-size: 0.9rem; letter-spacing: 0.5px;">{{ s.name }}</h6>
+
+                    <div class="progress-custom mb-3">
+                        <div class="progress-bar bg-success progress-glow" 
+                             role="progressbar" 
+                             style="width: {{ s.level }}%" 
+                             aria-valuenow="{{ s.level }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100"></div>
                     </div>
-                    <div class="d-flex gap-2 mt-3">
-                        <a href="{{ url_for('admin.skill_edit', id=s.id) }}" class="text-warning text-decoration-none small">Modifier</a>
+
+                    <div class="d-flex gap-3 pt-2 border-top border-white border-opacity-5">
+                        <a href="{{ url_for('admin.skill_edit', id=s.id) }}" class="action-link text-warning text-decoration-none">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </a>
                         <form action="{{ url_for('admin.skill_delete', id=s.id) }}" method="POST" class="d-inline">
-                            <button type="submit" class="btn btn-link text-danger p-0 small text-decoration-none" onclick="return confirm('Supprimer ?')">Supprimer</button>
+                            <button type="submit" class="btn btn-link p-0 action-link text-danger text-decoration-none border-0 shadow-none" 
+                                    onclick="return confirm('Confirmer la suppression de {{ s.name }} ?')">
+                                <i class="bi bi-trash3 me-1"></i>Del
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5 opacity-25">
+            <i class="bi bi-database-exclamation fs-1"></i>
+            <p class="mt-2">Aucune compétence enregistrée.</p>
         </div>
         {% endfor %}
     </div>

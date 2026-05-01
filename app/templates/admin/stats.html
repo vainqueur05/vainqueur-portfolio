@@ -1,34 +1,119 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Gestion des statistiques</h1>
-    <a href="{{ url_for('admin.stat_new') }}" class="btn btn-primary mb-3">Ajouter une statistique</a>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Label</th>
-                <th>Valeur</th>
-                <th>Icône</th>
-                <th>Actions</th>
-            </thead>
-        <tbody>
-            {% for s in stats %}
-            <tr>
-                <td>{{ s.id }}</td>
-                <td>{{ s.label }}</td>
-                <td>{{ s.value }}</td>
-                <td><i class="bi {{ s.icon }}"></i> {{ s.icon }}</td>
-                <td>
-                    <a href="{{ url_for('admin.stat_edit', id=s.id) }}" class="btn btn-sm btn-warning">Modifier</a>
-                    <form action="{{ url_for('admin.stat_delete', id=s.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette statistique ?')">Supprimer</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<style>
+    /* Alignement global pour le studio */
+    body { padding-top: 100px; background-color: #050505 !important; color: #f0f0f0; }
+
+    .stat-list-card {
+        background: #0a0a0a;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        transition: 0.3s ease;
+    }
+    .stat-list-card:hover {
+        border-color: #0d6efd;
+        background: rgba(13, 110, 253, 0.02);
+    }
+
+    .stat-icon-circle {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        font-size: 1.1rem;
+    }
+
+    .stat-badge-value {
+        font-family: 'Fira Code', monospace;
+        font-weight: 700;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .btn-action-sm {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        padding: 0;
+        font-size: 0.85rem;
+        transition: 0.2s;
+    }
+</style>
+
+<div class="container mt-2 fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-white border-opacity-10 pb-4">
+        <div>
+            <h1 class="text-white fw-bold m-0"><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Statistiques</h1>
+            <p class="text-muted small m-0 mt-1">Metrics de performance affichées sur le portfolio</p>
+        </div>
+        <a href="{{ url_for('admin.stat_new') }}" class="btn btn-primary px-4 py-2 fw-bold rounded-3 shadow">
+            <i class="bi bi-plus-lg me-1"></i> Nouveau Metric
+        </a>
+    </div>
+
+    <div class="stats-manager">
+        <div class="row px-4 mb-3 d-none d-md-flex text-muted small fw-bold text-uppercase" style="letter-spacing: 1px;">
+            <div class="col-md-1">ID</div>
+            <div class="col-md-4">Indicateur (Label)</div>
+            <div class="col-md-2 text-center">Valeur</div>
+            <div class="col-md-2 text-center">Icône</div>
+            <div class="col-md-3 text-end">Gestion</div>
+        </div>
+
+        {% for s in stats %}
+        <div class="stat-list-card">
+            <div class="row align-items-center">
+                <div class="col-md-1 d-none d-md-block text-muted font-monospace small">
+                    #{{ s.id }}
+                </div>
+
+                <div class="col-md-4 col-6">
+                    <span class="text-white fw-bold">{{ s.label }}</span>
+                </div>
+
+                <div class="col-md-2 col-6 text-md-center text-end">
+                    <span class="stat-badge-value border border-white border-opacity-10">{{ s.value }}</span>
+                </div>
+
+                <div class="col-md-2 d-none d-md-flex justify-content-center">
+                    <div class="stat-icon-circle shadow-sm">
+                        <i class="bi {{ s.icon }}"></i>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12 text-end mt-3 mt-md-0">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin.stat_edit', id=s.id) }}" class="btn btn-outline-warning btn-action-sm" title="Modifier">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="{{ url_for('admin.stat_delete', id=s.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-action-sm" onclick="return confirm('Supprimer ce metric ?')" title="Supprimer">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5 border border-dashed border-secondary rounded-4 opacity-25">
+            <i class="bi bi-graph-down fs-1 mb-2"></i>
+            <p>Aucune donnée statistique à afficher.</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

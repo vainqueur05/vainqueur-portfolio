@@ -1,182 +1,776 @@
 {% extends 'base.html' %}
 
-{% block title %}Accueil - Kairos Portfolio{% endblock %}
+{% block title %}KAIROS — L'instant où votre idée devient réalité digitale{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6 text-center text-md-start">
-                <div class="avatar-container mb-3">
-                    <img src="{{ url_for('static', filename='uploads/' + bio.avatar) if bio.avatar else url_for('static', filename='images/avatar.jpg') }}" alt="Photo" class="avatar">
-                </div>
-                <h1>{{ bio.name }}</h1>
-                <div class="typing-text mb-3"></div>
-                <div class="mb-3">
-                    {% if bio.availability %}
-                        <span class="availability"></span> Disponible pour missions
-                    {% else %}
-                        <span class="availability"></span> Indisponible
-                    {% endif %}
-                </div>
-                <p class="lead">{{ bio.bio_text }}</p>
-                <div class="mt-4">
-                    <a href="{{ url_for('main.whatsapp_redirect') }}" target="_blank" class="btn btn-primary btn-lg me-3 shadow">Démarrer un projet</a>
-                    <a href="{{ url_for('main.services') }}" class="btn btn-outline-primary btn-lg">Voir mes offres</a>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="row g-3 mt-4 mt-md-0">
-                    <div class="col-4 text-center">
-                        <i class="bi bi-code-slash display-4 text-primary"></i>
-                        <p>Code propre</p>
-                    </div>
-                    <div class="col-4 text-center">
-                        <i class="bi bi-clock-history display-4 text-primary"></i>
-                        <p>Réactivité 24/7</p>
-                    </div>
-                    <div class="col-4 text-center">
-                        <i class="bi bi-chat-dots display-4 text-primary"></i>
-                        <p>Communication fluide</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="container py-5 fade-up">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 text-center">
-            <h2 class="section-title">Comprendre vos besoins pour mieux vous servir</h2>
-            <p class="lead">Écouter pour comprendre, conseiller pour optimiser, créer pour impacter. Je transforme vos défis en produits digitaux de haute précision.</p>
-        </div>
-    </div>
-</section>
-
-<section class="container py-5 fade-up">
-    <h2 class="section-title text-center">Quelques chiffres</h2>
-    <div class="row text-center g-4">
-        {% for stat in stats %}
-        <div class="col-md-3">
-            <i class="bi {{ stat.icon }} display-3 text-primary"></i>
-            <h3 class="mt-2">{{ stat.value }}</h3>
-            <p>{{ stat.label }}</p>
-        </div>
-        {% endfor %}
-    </div>
-</section>
-
-<section class="container py-5 fade-up">
-    <h2 class="section-title">Ce que je peux faire pour vous</h2>
-    <div class="row g-4">
-        {% for service in services %}
-        <div class="col-md-4">
-            <div class="card h-100 text-center p-4">
-                <i class="bi {{ service.icon }} service-icon"></i>
-                <h3 class="h4 mt-3">{{ service.title }}</h3>
-                <p>{{ service.description }}</p>
-                <a href="{{ url_for('main.services') }}" class="btn btn-outline-primary mt-3">Voir l'offre</a>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</section>
-
-<section class="container py-5 fade-up">
-    <h2 class="section-title">Mes réalisations</h2>
-    <div class="row g-4">
-        {% for project in projects %}
-        <div class="col-md-4">
-            <div class="card h-100">
-                <img src="{{ url_for('static', filename='uploads/' + project.image) if project.image else url_for('static', filename='images/default-project.jpg') }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
-                <div class="card-body">
-                    <h5 class="card-title">{{ project.title }}</h5>
-                    <p class="card-text">{{ project.description[:100] }}...</p>
-                    <a href="{{ url_for('main.project_detail', id=project.id) }}" class="btn btn-primary">Voir détails</a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</section>
-
-<section class="container py-5 fade-up">
-    <h2 class="section-title">Mes compétences</h2>
-    <div class="row g-4">
-        {% set grouped = {} %}
-        {% for skill in skills %}
-            {% set category = skill.category %}
-            {% if category not in grouped %}
-                {% set _ = grouped.update({category: []}) %}
-            {% endif %}
-            {% set _ = grouped[category].append(skill) %}
-        {% endfor %}
-        {% for cat, skills_list in grouped.items() %}
-        <div class="col-md-6">
-            <h4 class="category-title mb-4"><i class="bi bi-layers me-2"></i>{{ cat|capitalize }}</h4>
-            <div class="d-flex flex-wrap gap-3">
-                {% for skill in skills_list %}
-                <div class="skill-tile">
-                    <div class="skill-info">
-                        <span class="skill-name">{{ skill.name }}</span>
-                        <span class="skill-percent">{{ skill.percentage }}%</span>
-                    </div>
-                    <div class="skill-progress-mini">
-                        <div class="progress-fill" style="width: {{ skill.percentage }}%"></div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</section>
-
-<section class="container py-5 fade-up mb-5">
-    <h2 class="section-title">Parlons de votre projet</h2>
-    <div class="row g-4 text-center">
-        <div class="col-md-6">
-            <a href="{{ url_for('main.whatsapp_redirect') }}" class="btn btn-success btn-lg w-100 py-3 shadow" target="_blank">
-                <i class="bi bi-whatsapp me-2"></i> WhatsApp Business
-            </a>
-        </div>
-        <div class="col-md-6">
-            <a href="mailto:vainqueurkalema035@gmail.com" class="btn btn-primary btn-lg w-100 py-3 shadow">
-                <i class="bi bi-envelope me-2"></i> Email Professionnel
-            </a>
-        </div>
-    </div>
-</section>
-
-<a href="{{ url_for('main.whatsapp_redirect') }}" target="_blank" class="wa-float-btn shadow-lg" title="Discuter sur WhatsApp">
-    <i class="bi bi-whatsapp"></i>
-</a>
-
 <style>
-.wa-float-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background-color: #25d366;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    z-index: 9999;
-    text-decoration: none;
-    transition: 0.3s;
-    animation: pulse-wa 2s infinite;
-}
-.wa-float-btn:hover { transform: scale(1.1); color: #fff; }
-@keyframes pulse-wa {
-    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-}
+    /* ===== HERO IMMERSIF ===== */
+    .hero-section { 
+        min-height: 100vh; display: flex; align-items: center; 
+        padding: 140px 0 80px; position: relative; overflow: hidden;
+    }
+    
+    .display-huge { 
+        font-size: clamp(2.8rem, 8vw, 6.5rem); 
+        font-weight: 900; line-height: 0.95; 
+        letter-spacing: -0.04em; color: white;
+    }
+    
+    .text-gradient-primary { 
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-size: 200% auto; animation: shine 4s linear infinite;
+    }
+    @keyframes shine {
+        to { background-position: 200% center; }
+    }
+
+    .hero-tag {
+        display: inline-flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-soft);
+        padding: 8px 18px; border-radius: 100px;
+        font-size: 0.85rem; color: var(--text-soft);
+        margin-bottom: 30px;
+    }
+    .hero-tag .pulse {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #22c55e; box-shadow: 0 0 10px #22c55e;
+        animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    .hero-stats {
+        display: flex; gap: 40px; margin-top: 50px;
+        padding-top: 30px; border-top: 1px solid var(--border-soft);
+    }
+    .hero-stat-num {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.2rem; font-weight: 800; color: white;
+        line-height: 1;
+    }
+    .hero-stat-label {
+        font-size: 0.8rem; color: var(--text-muted);
+        text-transform: uppercase; letter-spacing: 2px;
+    }
+
+    /* Avatar Hero */
+    .avatar-frame {
+        position: relative; aspect-ratio: 3/4;
+        border-radius: 30px; overflow: hidden;
+        background: var(--surface);
+    }
+    .avatar-frame img { 
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+    .avatar-frame:hover img { transform: scale(1.05); }
+    .avatar-frame::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, transparent 60%, rgba(0,240,255,0.15));
+        z-index: 1; pointer-events: none;
+    }
+    .avatar-badge {
+        position: absolute; bottom: 20px; left: 20px; right: 20px;
+        background: var(--glass); backdrop-filter: blur(20px);
+        border: 1px solid var(--border-soft);
+        padding: 14px 18px; border-radius: 16px;
+        z-index: 2; display: flex; align-items: center; gap: 12px;
+    }
+
+    /* ===== BUTTONS PREMIUM ===== */
+    .btn-primary-glow {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000 !important; font-weight: 700;
+        padding: 16px 40px; border-radius: 100px; border: none;
+        transition: all 0.3s; position: relative; overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3);
+    }
+    .btn-primary-glow::before {
+        content: ''; position: absolute; top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: left 0.6s;
+    }
+    .btn-primary-glow:hover::before { left: 100%; }
+    .btn-primary-glow:hover { 
+        transform: translateY(-3px); 
+        box-shadow: 0 20px 50px rgba(0, 240, 255, 0.5);
+    }
+
+    .btn-ghost {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-soft);
+        color: white !important; font-weight: 600;
+        padding: 16px 40px; border-radius: 100px;
+        transition: all 0.3s;
+    }
+    .btn-ghost:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.2);
+        transform: translateY(-2px);
+    }
+
+    /* ===== BENTO CARDS ===== */
+    .bento-card { 
+        background: var(--surface); 
+        border: 1px solid var(--border-soft); 
+        border-radius: 24px; padding: 40px; 
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        height: 100%; position: relative; overflow: hidden;
+    }
+    .bento-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(600px at var(--mouse-x) var(--mouse-y), rgba(0,240,255,0.06), transparent 40%);
+        opacity: 0; transition: opacity 0.4s;
+        pointer-events: none;
+    }
+    .bento-card:hover::before { opacity: 1; }
+    .bento-card:hover { 
+        border-color: var(--border-hover); 
+        transform: translateY(-6px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    }
+    
+    .bento-icon {
+        width: 60px; height: 60px; border-radius: 16px;
+        background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(139,92,246,0.1));
+        border: 1px solid var(--border-soft);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem; color: var(--primary);
+        margin-bottom: 24px;
+    }
+
+    /* ===== MARQUEE ===== */
+    .marquee-container { 
+        width: 100%; overflow: hidden; 
+        background: var(--primary); color: #000; 
+        padding: 18px 0; 
+        transform: rotate(-1.5deg) scale(1.02); 
+        margin: 80px 0; z-index: 2;
+    }
+    .marquee-content { 
+        display: flex; white-space: nowrap; 
+        animation: marquee 30s linear infinite; 
+        font-weight: 900; text-transform: uppercase; 
+        font-size: 1.1rem; letter-spacing: 3px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .marquee-content span { padding: 0 30px; }
+    .marquee-content .dot { color: var(--accent); }
+    @keyframes marquee { 
+        0% { transform: translateX(0); } 
+        100% { transform: translateX(-50%); } 
+    }
+
+    /* ===== STEPS ===== */
+    .step-card {
+        position: relative; padding: 30px;
+        background: var(--surface); border: 1px solid var(--border-soft);
+        border-radius: 24px; height: 100%;
+        transition: all 0.3s;
+    }
+    .step-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-4px);
+    }
+    .step-num { 
+        width: 50px; height: 50px; 
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000; border-radius: 16px; 
+        display: flex; align-items: center; justify-content: center; 
+        font-weight: 900; font-size: 1.3rem;
+        margin-bottom: 20px;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    /* ===== FAQ LUXE ===== */
+    .accordion-item { 
+        background: var(--surface) !important; 
+        border: 1px solid var(--border-soft) !important; 
+        border-radius: 20px !important; 
+        margin-bottom: 12px; overflow: hidden;
+        transition: border-color 0.3s;
+    }
+    .accordion-item:hover { border-color: var(--border-hover) !important; }
+    .accordion-button { 
+        background: transparent !important; 
+        color: white !important; 
+        font-weight: 600; padding: 24px; 
+        box-shadow: none !important; font-size: 1.05rem;
+    }
+    .accordion-button:not(.collapsed) { 
+        color: var(--primary) !important; 
+        border-bottom: 1px solid var(--border-soft);
+    }
+    .accordion-button::after {
+        background-image: none; content: '+'; font-size: 1.5rem;
+        font-weight: 300; transition: transform 0.3s;
+        background: rgba(255,255,255,0.05); border-radius: 50%;
+        width: 30px; height: 30px; display: flex;
+        align-items: center; justify-content: center;
+    }
+    .accordion-button:not(.collapsed)::after {
+        content: '−'; transform: rotate(180deg);
+        background: rgba(0,240,255,0.1);
+    }
+    .accordion-body { color: var(--text-soft); padding: 24px; line-height: 1.7; }
+
+    /* ===== PROJECT CARD ===== */
+    .project-card {
+        position: relative; border-radius: 24px;
+        overflow: hidden; height: 420px;
+        background: var(--surface);
+        transition: all 0.4s;
+    }
+    .project-card img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.6s;
+    }
+    .project-card:hover img { transform: scale(1.08); }
+    .project-card:hover { transform: translateY(-6px); }
+    .project-overlay {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        padding: 30px;
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 20%, transparent);
+    }
+    .project-tag {
+        display: inline-block;
+        background: var(--primary); color: #000;
+        font-size: 0.75rem; font-weight: 700;
+        padding: 4px 12px; border-radius: 100px;
+        margin-bottom: 12px;
+    }
+
+    /* ===== TESTIMONIAL CARD ===== */
+    .testimonial-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 24px; padding: 35px;
+        height: 100%; position: relative;
+        transition: all 0.3s;
+    }
+    .testimonial-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-4px);
+    }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        font-weight: 900; line-height: 1.05;
+        letter-spacing: -0.03em;
+        margin-bottom: 50px;
+    }
+    .section-eyebrow {
+        display: inline-block;
+        color: var(--primary); font-size: 0.85rem;
+        font-weight: 600; text-transform: uppercase;
+        letter-spacing: 4px; margin-bottom: 16px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .section-spacing { padding: 120px 0; }
+    @media (max-width: 768px) { .section-spacing { padding: 80px 0; } }
+
+    /* ===== TRUST BAR ===== */
+    .trust-bar {
+        padding: 40px 0; border-top: 1px solid var(--border-soft);
+        border-bottom: 1px solid var(--border-soft);
+    }
+    .trust-item {
+        display: flex; align-items: center; gap: 12px;
+        color: var(--text-soft); font-size: 0.9rem;
+    }
+    .trust-item i { color: var(--primary); font-size: 1.3rem; }
+
+    /* ===== FINAL CTA ===== */
+    .final-cta {
+        background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(139,92,246,0.08));
+        border: 1px solid var(--border-soft);
+        border-radius: 32px; padding: 80px 40px;
+        text-align: center; position: relative; overflow: hidden;
+    }
+    .final-cta::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at 50% 0%, rgba(0,240,255,0.15), transparent 50%);
+        pointer-events: none;
+    }
 </style>
+
+<!-- ===== HERO ===== -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7 gs-reveal">
+                <div class="hero-tag">
+                    <span class="pulse"></span>
+                    <span>Studio digital • Lubumbashi → Monde</span>
+                </div>
+                
+                <h1 class="display-huge mb-4">
+                    L'instant <em style="font-style:italic;font-weight:300;">décisif</em><br>
+                    où votre idée<br>
+                    <span class="text-gradient-primary">devient réalité.</span>
+                </h1>
+                
+                <p class="lead mb-5" style="color: var(--text-soft); font-size: 1.25rem; max-width: 580px; line-height: 1.6;">
+                    {{ bio.bio_text if bio.bio_text else "Je conçois des expériences digitales qui ne se contentent pas d'exister — elles convertissent, marquent, et durent. Python, Flask, et un design qui parle." }}
+                </p>
+                
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('main.whatsapp_redirect') }}" class="btn btn-primary-glow">
+                        Réserver un créneau →
+                    </a>
+                    <a href="#travaux" class="btn btn-ghost">
+                        <i class="bi bi-play-circle me-2"></i>Voir les travaux
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div>
+                        <div class="hero-stat-num">5+</div>
+                        <div class="hero-stat-label">Années d'expertise</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-num">30+</div>
+                        <div class="hero-stat-label">Projets livrés</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-num">100%</div>
+                        <div class="hero-stat-label">Clients satisfaits</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 d-none d-lg-block gs-reveal">
+                <div class="avatar-frame">
+                    <img src="{{ url_for('static', filename='uploads/' + bio.avatar) if bio.avatar else url_for('static', filename='images/avatar.jpg') }}" alt="Vainqueur Kalema">
+                    <div class="avatar-badge">
+                        <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;">VK</div>
+                        <div>
+                            <div class="fw-bold text-white" style="font-size:0.95rem;">Vainqueur Kalema</div>
+                            <div style="color:var(--text-soft);font-size:0.8rem;">Architecte Digital</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TRUST BAR ===== -->
+<div class="trust-bar">
+    <div class="container">
+        <div class="row g-4 align-items-center justify-content-around">
+            <div class="col-6 col-md-3 trust-item gs-reveal">
+                <i class="bi bi-shield-check"></i>
+                <span>Code propriétaire garanti</span>
+            </div>
+            <div class="col-6 col-md-3 trust-item gs-reveal">
+                <i class="bi bi-clock-history"></i>
+                <span>Livraison en moins de 30 jours</span>
+            </div>
+            <div class="col-6 col-md-3 trust-item gs-reveal">
+                <i class="bi bi-headset"></i>
+                <span>Support 30 jours offerts</span>
+            </div>
+            <div class="col-6 col-md-3 trust-item gs-reveal">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>Révisions illimitées</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MARQUEE ===== -->
+<div class="marquee-container">
+    <div class="marquee-content">
+        <span>STRATÉGIE DIGITALE</span><span class="dot">●</span>
+        <span>PYTHON × FLASK</span><span class="dot">●</span>
+        <span>DESIGN QUI CONVERTIT</span><span class="dot">●</span>
+        <span>ARCHITECTURE SCALABLE</span><span class="dot">●</span>
+        <span>KAIROS</span><span class="dot">●</span>
+        <span>STRATÉGIE DIGITALE</span><span class="dot">●</span>
+        <span>PYTHON × FLASK</span><span class="dot">●</span>
+        <span>DESIGN QUI CONVERTIT</span><span class="dot">●</span>
+        <span>ARCHITECTURE SCALABLE</span><span class="dot">●</span>
+        <span>KAIROS</span><span class="dot">●</span>
+    </div>
+</div>
+
+<!-- ===== BESOINS ===== -->
+<section id="suggestions" class="section-spacing">
+    <div class="container">
+        <div class="text-center mb-5 gs-reveal">
+            <span class="section-eyebrow">Pour qui ?</span>
+            <h2 class="section-title">Quel est votre <span class="text-gradient-primary">terrain de jeu</span> ?</h2>
+            <p class="lead" style="color: var(--text-soft); max-width: 600px; margin: 0 auto;">
+                Trois profils, une seule promesse : transformer vos contraintes en avantage compétitif.
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 gs-reveal">
+                <div class="bento-card">
+                    <div class="bento-icon"><i class="bi bi-rocket-takeoff"></i></div>
+                    <h4 class="fw-bold mb-3">Startup en lancement</h4>
+                    <p style="color: var(--text-soft);">MVP fonctionnel en 21 jours. Testez votre marché avant que vos concurrents ne le découvrent.</p>
+                    <div class="mt-4">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2">À partir de 21 jours</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 gs-reveal">
+                <div class="bento-card">
+                    <div class="bento-icon" style="color: var(--accent);"><i class="bi bi-cart-check"></i></div>
+                    <h4 class="fw-bold mb-3">E-commerce qui vend</h4>
+                    <p style="color: var(--text-soft);">Boutique sécurisée, paiement mobile money, stock automatisé. Vendez pendant que vous dormez.</p>
+                    <div class="mt-4">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2">Conversion +40%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 gs-reveal">
+                <div class="bento-card">
+                    <div class="bento-icon" style="color: #f59e0b;"><i class="bi bi-cpu"></i></div>
+                    <h4 class="fw-bold mb-3">Automatisation pro</h4>
+                    <p style="color: var(--text-soft);">Bots, scrapers, dashboards. Récupérez 10h/semaine et concentrez-vous sur ce qui compte.</p>
+                    <div class="mt-4">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2">ROI immédiat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== STATS ===== -->
+{% if stats %}
+<section class="py-5" style="background: rgba(0,0,0,0.3);">
+    <div class="container">
+        <div class="text-center mb-5 gs-reveal">
+            <span class="section-eyebrow">Les chiffres parlent</span>
+            <h2 class="section-title mb-0">Au-delà des <span class="text-gradient-primary">promesses</span></h2>
+        </div>
+        <div class="row g-4 text-center">
+            {% for stat in stats %}
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="bento-card py-5">
+                    <h2 class="display-3 fw-bold text-gradient-primary mb-2" data-counter="{{ stat.value }}">{{ stat.value }}</h2>
+                    <p class="small text-uppercase" style="color: var(--text-muted); letter-spacing: 2px;">{{ stat.label }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ===== SERVICES ===== -->
+<section class="section-spacing">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5 gs-reveal">
+            <div>
+                <span class="section-eyebrow">Expertise</span>
+                <h2 class="section-title mb-0">Le <span class="text-gradient-primary">studio</span></h2>
+            </div>
+            <a href="{{ url_for('main.services') }}" class="btn btn-ghost">Tous les services →</a>
+        </div>
+        <div class="row g-4">
+            {% for service in services %}
+            <div class="col-md-4 gs-reveal">
+                <div class="bento-card">
+                    <div class="bento-icon"><i class="bi {{ service.icon }}"></i></div>
+                    <h3 class="h4 fw-bold mb-3">{{ service.title }}</h3>
+                    <p style="color: var(--text-soft);">{{ service.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ===== PROCESS ===== -->
+<section class="section-spacing" style="background: rgba(0,0,0,0.3);">
+    <div class="container">
+        <div class="text-center mb-5 gs-reveal">
+            <span class="section-eyebrow">Méthode</span>
+            <h2 class="section-title">De l'idée au <span class="text-gradient-primary">décollage</span></h2>
+            <p class="lead" style="color: var(--text-soft); max-width: 600px; margin: 0 auto;">
+                Un processus éprouvé. Pas de surprise, pas de blabla. Juste du résultat.
+            </p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <h5 class="fw-bold mb-2">Écouter</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">Diagnostic stratégique. Vos objectifs business, mes solutions techniques.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <h5 class="fw-bold mb-2">Concevoir</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">Maquettes interactives. Vous validez avant qu'une ligne de code soit écrite.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <h5 class="fw-bold mb-2">Construire</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">Code propre, sécurisé, scalable. Python/Flask. Suivez en temps réel.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="step-card">
+                    <div class="step-num">04</div>
+                    <h5 class="fw-bold mb-2">Décoller</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">Mise en ligne, formation, support 30 jours. Votre succès est mon métrique.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TRAVAUX ===== -->
+<section id="travaux" class="section-spacing">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5 gs-reveal">
+            <div>
+                <span class="section-eyebrow">Portfolio</span>
+                <h2 class="section-title mb-0">Travaux <span class="text-gradient-primary">récents</span></h2>
+            </div>
+            <a href="{{ url_for('main.projects') }}" class="btn btn-ghost">Tout voir →</a>
+        </div>
+        <div class="row g-4">
+            {% for project in projects %}
+            <div class="col-md-6 col-lg-4 gs-reveal">
+                <a href="{{ url_for('main.project_detail', id=project.id) }}" class="text-decoration-none">
+                    <div class="project-card">
+                        <img src="{{ url_for('static', filename='uploads/' + project.image) if project.image else url_for('static', filename='images/default-project.jpg') }}" alt="{{ project.title }}" loading="lazy">
+                        <div class="project-overlay">
+                            <span class="project-tag">{{ project.category if project.category else "Web" }}</span>
+                            <h5 class="fw-bold text-white mb-2">{{ project.title }}</h5>
+                            <p class="small mb-0" style="color: rgba(255,255,255,0.7);">{{ project.description[:80] }}...</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ===== SKILLS ===== -->
+<section class="section-spacing" style="background: rgba(0,0,0,0.3);">
+    <div class="container">
+        <div class="text-center mb-5 gs-reveal">
+            <span class="section-eyebrow">Stack technique</span>
+            <h2 class="section-title">Maîtrise <span class="text-gradient-primary">opérationnelle</span></h2>
+        </div>
+        <div class="row g-4">
+            {% set grouped = {} %}
+            {% for skill in skills %}
+                {% set category = skill.category %}
+                {% if category not in grouped %}{% set _ = grouped.update({category: []}) %}{% endif %}
+                {% set _ = grouped[category].append(skill) %}
+            {% endfor %}
+
+            {% for cat, skills_list in grouped.items() %}
+            <div class="col-md-6 gs-reveal">
+                <div class="bento-card">
+                    <h4 class="mb-4 text-white d-flex align-items-center">
+                        <i class="bi bi-terminal me-2 text-primary"></i>{{ cat|capitalize }}
+                    </h4>
+                    {% for skill in skills_list %}
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-medium">{{ skill.name }}</span>
+                            <span class="text-primary fw-bold">{{ skill.percentage }}%</span>
+                        </div>
+                        <div class="progress" style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
+                            <div class="progress-bar" 
+                                 style="width: {{ skill.percentage }}%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 10px;"
+                                 data-skill="{{ skill.percentage }}"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ===== TÉMOIGNAGES ===== -->
+{% if testimonials %}
+<section class="section-spacing">
+    <div class="container">
+        <div class="text-center mb-5 gs-reveal">
+            <span class="section-eyebrow">Social proof</span>
+            <h2 class="section-title">Ils ont <span class="text-gradient-primary">parié</span> sur moi</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% for t in testimonials[:4] %}
+            <div class="col-md-6 gs-reveal">
+                <div class="testimonial-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <i class="bi bi-quote" style="font-size: 2.5rem; color: var(--primary); opacity: 0.4;"></i>
+                        <div class="text-warning">
+                            {% for i in range(t.rating|int) %}
+                                <i class="bi bi-star-fill"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="fs-5 mb-4" style="line-height: 1.6;">"{{ t.message | truncate(200) }}"</p>
+                    <div class="d-flex align-items-center gap-3 pt-3" style="border-top: 1px solid var(--border-soft);">
+                        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;">
+                            {{ t.client_name[0]|upper }}
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-white">{{ t.client_name }}</h6>
+                            <span class="small" style="color: var(--text-muted);">Client partenaire</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ===== FAQ ===== -->
+<section class="section-spacing" style="background: rgba(0,0,0,0.3);">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5 gs-reveal">
+                <span class="section-eyebrow">FAQ</span>
+                <h2 class="section-title">Vos <span class="text-gradient-primary">questions</span>, mes réponses</h2>
+                <p style="color: var(--text-soft);">
+                    La transparence est non-négociable. Voici ce qu'on me demande le plus.
+                </p>
+                <a href="{{ url_for('main.contact') }}" class="btn btn-primary-glow mt-3">
+                    Une autre question ?
+                </a>
+            </div>
+            <div class="col-lg-7 gs-reveal">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#f1">Quel est le délai moyen pour un projet ?</button></h2>
+                        <div id="f1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Entre <strong class="text-white">10 jours pour un MVP</strong> et <strong class="text-white">6 semaines pour un projet complexe</strong>. Je m'engage sur des deadlines fermes — pas d'à-peu-près.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f2">Proposez-vous une maintenance après livraison ?</button></h2>
+                        <div id="f2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Oui. <strong class="text-white">30 jours de support technique offerts</strong> après la mise en ligne. Au-delà, des contrats mensuels existent à partir de 50$/mois.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f3">Quelles sont vos tarifs ?</button></h2>
+                        <div id="f3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Chaque projet est unique. Un site vitrine commence à <strong class="text-white">300$</strong>, un MVP startup autour de <strong class="text-white">800$</strong>, un e-commerce complet à partir de <strong class="text-white">1200$</strong>. Devis personnalisé en 24h.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f4">Travaillez-vous avec des clients hors RDC ?</button></h2>
+                        <div id="f4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Absolument. <strong class="text-white">Le digital n'a pas de frontières.</strong> J'ai des clients en France, au Canada et en Côte d'Ivoire. Paiement par virement, PayPal ou Mobile Money.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f5">Le code source m'appartient-il vraiment ?</button></h2>
+                        <div id="f5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <strong class="text-white">100% à vous.</strong> Pas de licence cachée, pas de dépendance. Vous recevez le code, la documentation, et la liberté totale de l'évoluer avec qui vous voulez.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="section-spacing">
+    <div class="container gs-reveal">
+        <div class="final-cta">
+            <span class="section-eyebrow">Le moment est venu</span>
+            <h2 class="display-huge mb-4" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">
+                Votre projet mérite<br>
+                <span class="text-gradient-primary">l'excellence.</span>
+            </h2>
+            <p class="lead mb-5" style="color: var(--text-soft); font-size: 1.25rem; max-width: 600px; margin: 0 auto;">
+                Réservez 30 minutes. Sans engagement. Repartez avec une vision claire de votre digital.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="https://wa.me/243895288981" class="btn btn-primary-glow">
+                    <i class="bi bi-whatsapp me-2"></i>Discuter maintenant
+                </a>
+                <a href="{{ url_for('main.contact') }}" class="btn btn-ghost">
+                    Formulaire détaillé →
+                </a>
+            </div>
+            <p class="small mt-4 mb-0" style="color: var(--text-muted);">
+                <i class="bi bi-shield-check text-primary me-1"></i>
+                Réponse garantie sous 4h ouvrées
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Animations reveal
+        document.querySelectorAll('.gs-reveal').forEach((el) => {
+            gsap.fromTo(el, 
+                { y: 60, opacity: 0 }, 
+                {
+                    scrollTrigger: { trigger: el, start: "top 88%", once: true },
+                    y: 0, opacity: 1, duration: 1, ease: "power3.out"
+                }
+            );
+        });
+
+        // Effet "spotlight" sur bento-cards
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', x + 'px');
+                card.style.setProperty('--mouse-y', y + 'px');
+            });
+        });
+
+        // Animation skills
+        document.querySelectorAll('[data-skill]').forEach(bar => {
+            const target = bar.getAttribute('data-skill');
+            bar.style.width = '0%';
+            ScrollTrigger.create({
+                trigger: bar,
+                start: "top 90%",
+                onEnter: () => {
+                    gsap.to(bar, { width: target + '%', duration: 1.5, ease: "power3.out" });
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

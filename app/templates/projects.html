@@ -1,44 +1,324 @@
 {% extends 'base.html' %}
 
-{% block title %}Projets - Kairos Portfolio{% endblock %}
+{% block title %}Travaux & Études de Cas — KAIROS{% endblock %}
 
 {% block content %}
-<div class="container py-5 fade-up">
-    <div class="border-start border-primary border-4 ps-4 mb-5">
-        <h1 class="text-white fw-bold display-5">Réalisations <span class="text-muted">&</span> Labs</h1>
-        <p class="text-muted mb-0">Exploration de technologies et projets clients.</p>
-    </div>
+<style>
+    .projects-hero { padding: 160px 0 60px; }
+    
+    .section-eyebrow {
+        display: inline-block; color: var(--primary); font-size: 0.85rem;
+        font-weight: 600; text-transform: uppercase; letter-spacing: 4px;
+        margin-bottom: 16px; font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    .display-huge { 
+        font-size: clamp(2.5rem, 7vw, 5.5rem); 
+        font-weight: 900; line-height: 0.95; letter-spacing: -0.04em;
+    }
+    
+    .text-gradient-primary { 
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
 
-    <div class="row g-4">
-        {% for project in projects %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card bg-dark border-0 h-100 overflow-hidden group shadow">
-                <div class="position-relative overflow-hidden">
-                    <img src="{{ url_for('static', filename='uploads/' + project.image) if project.image else url_for('static', filename='images/default-project.jpg') }}" 
-                         class="card-img-top transition-scale" alt="{{ project.title }}" style="height: 250px; object-fit: cover;">
-                    <div class="card-img-overlay d-flex align-items-end p-0 bg-gradient-dark">
-                        <div class="p-4 w-100">
-                             <span class="badge bg-primary mb-2">{{ project.category }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body bg-dark border border-secondary border-top-0 rounded-bottom">
-                    <h5 class="text-white fw-bold mb-3">{{ project.title }}</h5>
-                    <p class="text-muted small line-clamp-2">{{ project.description[:120] }}...</p>
-                    <a href="{{ url_for('main.project_detail', id=project.id) }}" class="btn btn-outline-light btn-sm mt-2">
-                        Explorer le case study <i class="bi bi-chevron-right ms-1 small"></i>
-                    </a>
-                </div>
+    /* ===== FILTERS ===== */
+    .filter-bar {
+        display: flex; gap: 10px; flex-wrap: wrap;
+        padding: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 100px;
+    }
+
+    .filter-pill {
+        background: transparent; border: none;
+        color: var(--text-soft); padding: 10px 22px;
+        border-radius: 100px; font-size: 0.9rem;
+        cursor: pointer; transition: 0.3s; font-weight: 500;
+    }
+    .filter-pill:hover { color: white; background: rgba(255,255,255,0.05); }
+    .filter-pill.active {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000; font-weight: 700;
+    }
+
+    /* ===== PROJECT CARD ===== */
+    .project-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 28px;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%; position: relative;
+        text-decoration: none; color: inherit;
+        display: block;
+    }
+    .project-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    .project-img-container {
+        position: relative; height: 280px;
+        overflow: hidden; background: #000;
+    }
+    .project-img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .project-card:hover .project-img { transform: scale(1.08); }
+
+    .project-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0.3) 50%, transparent 100%);
+        opacity: 0.7; transition: opacity 0.3s;
+    }
+    .project-card:hover .project-overlay { opacity: 0.95; }
+
+    .category-badge {
+        position: absolute; top: 20px; left: 20px;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border-soft);
+        color: var(--primary);
+        padding: 6px 14px; border-radius: 100px;
+        font-size: 0.7rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 1.5px;
+        z-index: 2;
+    }
+
+    .live-badge {
+        position: absolute; top: 20px; right: 20px;
+        background: rgba(34, 197, 94, 0.15);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #22c55e;
+        padding: 6px 12px; border-radius: 100px;
+        font-size: 0.7rem; font-weight: 700;
+        z-index: 2; display: flex; align-items: center; gap: 6px;
+    }
+    .live-badge .dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px #22c55e;
+        animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; } 50% { opacity: 0.5; }
+    }
+
+    .project-content { padding: 28px; }
+
+    .project-title {
+        font-family: 'Outfit'; font-weight: 800;
+        font-size: 1.4rem; margin-bottom: 12px;
+        transition: color 0.3s;
+    }
+    .project-card:hover .project-title { color: var(--primary); }
+
+    .project-excerpt {
+        color: var(--text-soft); font-size: 0.92rem;
+        line-height: 1.6; margin-bottom: 20px;
+        display: -webkit-box; -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .project-footer {
+        display: flex; justify-content: space-between; align-items: center;
+        padding-top: 20px; border-top: 1px solid var(--border-soft);
+    }
+
+    .btn-explore {
+        color: white; text-decoration: none;
+        font-weight: 600; font-size: 0.9rem;
+        display: inline-flex; align-items: center; gap: 8px;
+        transition: gap 0.3s;
+    }
+    .project-card:hover .btn-explore { gap: 14px; color: var(--primary); }
+
+    .external-link {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-soft);
+        color: var(--text-soft);
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.3s; text-decoration: none;
+    }
+    .external-link:hover {
+        background: var(--primary); color: #000;
+        border-color: var(--primary); transform: rotate(-15deg);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        background: var(--surface);
+        border: 2px dashed var(--border-soft);
+        border-radius: 28px;
+        padding: 80px 40px;
+        text-align: center;
+    }
+
+    /* ===== FINAL CTA ===== */
+    .final-cta-projects {
+        background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(139,92,246,0.05));
+        border: 1px solid var(--border-soft);
+        border-radius: 32px; padding: 70px 40px;
+        text-align: center; position: relative; overflow: hidden;
+    }
+    .final-cta-projects::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at 50% 0%, rgba(0,240,255,0.1), transparent 50%);
+        pointer-events: none;
+    }
+
+    .btn-primary-glow {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000 !important; font-weight: 700;
+        padding: 16px 40px; border-radius: 100px; border: none;
+        transition: all 0.3s; box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3);
+    }
+    .btn-primary-glow:hover {
+        transform: translateY(-3px); 
+        box-shadow: 0 20px 50px rgba(0, 240, 255, 0.5);
+        color: #000 !important;
+    }
+</style>
+
+<div class="container">
+    <!-- HERO -->
+    <section class="projects-hero gs-reveal">
+        <div class="row align-items-end">
+            <div class="col-lg-8">
+                <span class="section-eyebrow">Portfolio · {{ projects|length if projects else 0 }} projets</span>
+                <h1 class="display-huge mb-3">
+                    Cas <span class="text-gradient-primary">d'études</span><br>
+                    & terrains de jeu.
+                </h1>
+                <p class="lead mb-0" style="color: var(--text-soft); max-width: 600px; font-size: 1.15rem;">
+                    Chaque projet raconte une histoire : un défi, une stratégie, un résultat mesurable.
+                    Voici ceux qui ont marqué.
+                </p>
             </div>
         </div>
-        {% endfor %}
-    </div>
-</div>
+    </section>
 
-<style>
-    .bg-gradient-dark { background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
-    .transition-scale { transition: transform 0.5s ease; }
-    .card:hover .transition-scale { transform: scale(1.1); }
-    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-</style>
+    <!-- FILTERS -->
+    <section class="mb-5 gs-reveal">
+        <div class="filter-bar d-inline-flex">
+            <button class="filter-pill active" data-filter="all">Tous</button>
+            <button class="filter-pill" data-filter="web">Web Apps</button>
+            <button class="filter-pill" data-filter="ecommerce">E-commerce</button>
+            <button class="filter-pill" data-filter="automation">Automation</button>
+            <button class="filter-pill" data-filter="ui">Design</button>
+        </div>
+    </section>
+
+    <!-- GRID -->
+    <div class="row g-4 mb-5">
+        {% for project in projects %}
+        <div class="col-md-6 col-lg-4 gs-reveal project-item" data-category="{{ project.category|lower|default('web') }}">
+            <a href="{{ url_for('main.project_detail', id=project.id) }}" class="project-card">
+                <div class="project-img-container">
+                    <span class="category-badge">{{ project.category|default('Web') }}</span>
+                    {% if project.link %}
+                    <span class="live-badge">
+                        <span class="dot"></span>LIVE
+                    </span>
+                    {% endif %}
+                    <img src="{{ url_for('static', filename='uploads/' + project.image) if project.image else url_for('static', filename='images/default-project.jpg') }}" 
+                         class="project-img" alt="{{ project.title }}" loading="lazy">
+                    <div class="project-overlay"></div>
+                </div>
+                
+                <div class="project-content">
+                    <h4 class="project-title text-white">{{ project.title }}</h4>
+                    <p class="project-excerpt">{{ project.description }}</p>
+                    
+                    <div class="project-footer">
+                        <span class="btn-explore">
+                            Étude de cas <i class="bi bi-arrow-right"></i>
+                        </span>
+                        {% if project.link %}
+                        <a href="{{ project.link }}" target="_blank" class="external-link" 
+                           onclick="event.stopPropagation();" title="Voir en ligne">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+        
+        {% if not projects %}
+        <div class="col-12 text-center gs-reveal">
+            <div class="empty-state">
+                <i class="bi bi-stack display-1 text-secondary opacity-25 mb-3 d-block"></i>
+                <h3 class="text-white mb-2">Les archives arrivent</h3>
+                <p style="color: var(--text-soft);">Documentation des derniers projets KAIROS en cours.</p>
+                <a href="{{ url_for('main.contact') }}" class="btn-primary-glow d-inline-block mt-3 text-decoration-none">
+                    Démarrer le vôtre →
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- CTA FINAL -->
+    <section class="py-5 gs-reveal mb-5">
+        <div class="final-cta-projects">
+            <span class="section-eyebrow">Et la suite ?</span>
+            <h2 class="display-huge mb-4" style="font-size: clamp(2rem, 5vw, 3.5rem);">
+                Le prochain projet<br>
+                <span class="text-gradient-primary">pourrait être le vôtre.</span>
+            </h2>
+            <p class="lead mb-4 mx-auto" style="color: var(--text-soft); max-width: 600px;">
+                Discutons de votre idée. Pas d'engagement, juste 30 minutes pour clarifier votre vision.
+            </p>
+            <a href="{{ url_for('main.contact') }}" class="btn-primary-glow text-decoration-none">
+                Démarrer une étude de cas <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        gsap.registerPlugin(ScrollTrigger);
+        document.querySelectorAll('.gs-reveal').forEach((el) => {
+            gsap.fromTo(el, 
+                { y: 50, opacity: 0, scale: 0.98 },
+                {
+                    scrollTrigger: { trigger: el, start: "top 90%", once: true },
+                    y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out"
+                }
+            );
+        });
+
+        // Filter
+        const pills = document.querySelectorAll('.filter-pill');
+        const items = document.querySelectorAll('.project-item');
+        
+        pills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                pills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                const filter = pill.dataset.filter;
+                
+                items.forEach(item => {
+                    if (filter === 'all' || item.dataset.category.includes(filter)) {
+                        gsap.to(item, { opacity: 1, scale: 1, duration: 0.4, display: 'block' });
+                    } else {
+                        gsap.to(item, { opacity: 0, scale: 0.9, duration: 0.3, 
+                            onComplete: () => item.style.display = 'none' });
+                    }
+                });
+            });
+        });
+    });
+</script>
 {% endblock %}

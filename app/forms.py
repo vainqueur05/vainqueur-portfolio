@@ -7,7 +7,6 @@ class LoginForm(FlaskForm):
     password = PasswordField('Mot de passe', validators=[DataRequired()])
     submit = SubmitField('Se connecter')
 
-# ... (imports existants)
 
 class ProjectForm(FlaskForm):
     title = StringField('Titre', validators=[DataRequired()])

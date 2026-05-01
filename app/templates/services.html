@@ -1,49 +1,394 @@
 {% extends 'base.html' %}
 
-{% block title %}Services - Kairos Portfolio{% endblock %}
+{% block title %}Services & Solutions — KAIROS Studio{% endblock %}
 
 {% block content %}
-<div class="container py-5 fade-up">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-white">Solutions <span class="text-primary">Sur Mesure</span></h1>
-        <p class="text-muted mx-auto" style="max-width: 600px;">Des architectures robustes et des interfaces intuitives pour propulser vos idées.</p>
+<style>
+    .services-hero { padding: 160px 0 60px; }
+    
+    .section-eyebrow {
+        display: inline-block; color: var(--primary); font-size: 0.85rem;
+        font-weight: 600; text-transform: uppercase; letter-spacing: 4px;
+        margin-bottom: 16px; font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    .display-huge { 
+        font-size: clamp(2.5rem, 7vw, 5.5rem); 
+        font-weight: 900; line-height: 0.95; letter-spacing: -0.04em;
+    }
+    
+    .text-gradient-primary { 
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-size: 200% auto; animation: shine 4s linear infinite;
+    }
+    @keyframes shine { to { background-position: 200% center; } }
+
+    /* ===== SERVICE CARD PREMIUM ===== */
+    .service-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 28px;
+        padding: 40px 35px;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative; overflow: hidden;
+        height: 100%; display: flex; flex-direction: column;
+    }
+
+    .service-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(600px at var(--mx, 50%) var(--my, 0%), rgba(0,240,255,0.08), transparent 50%);
+        opacity: 0; transition: opacity 0.4s; pointer-events: none;
+    }
+    .service-card:hover::before { opacity: 1; }
+    .service-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--border-hover);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+
+    .service-card.featured {
+        background: linear-gradient(180deg, rgba(0,240,255,0.05), var(--surface));
+        border-color: rgba(0,240,255,0.2);
+    }
+
+    .icon-wrapper {
+        width: 70px; height: 70px;
+        background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(139,92,246,0.1));
+        border: 1px solid var(--border-soft);
+        border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 28px;
+        transition: all 0.4s ease;
+    }
+    .service-card:hover .icon-wrapper {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        transform: rotate(-8deg) scale(1.05);
+    }
+    .service-card:hover .icon-wrapper i { color: #000 !important; }
+
+    .price-tag {
+        font-family: 'Outfit'; font-size: 2.8rem;
+        font-weight: 900; color: #fff; line-height: 1;
+        margin: 20px 0 8px;
+    }
+    .price-currency {
+        font-size: 1.2rem; color: var(--primary); 
+        vertical-align: top; margin-right: 4px;
+    }
+    .price-period {
+        color: var(--text-muted); font-size: 0.85rem;
+        font-weight: 400; margin-left: 8px;
+    }
+
+    .delivery-pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(245, 158, 11, 0.08);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        color: #f59e0b; padding: 6px 14px;
+        border-radius: 100px; font-size: 0.8rem; font-weight: 600;
+        margin-bottom: 24px;
+    }
+
+    .feature-list { list-style: none; padding: 0; margin: 24px 0; }
+    .feature-list li {
+        color: var(--text-soft); margin-bottom: 14px;
+        font-size: 0.92rem; display: flex; align-items: center; gap: 12px;
+    }
+    .feature-list li i {
+        color: var(--primary); font-size: 1rem;
+        background: rgba(0,240,255,0.1); 
+        width: 22px; height: 22px; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .btn-service {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000 !important; border: none;
+        border-radius: 100px; padding: 14px 28px;
+        font-weight: 700; transition: all 0.3s;
+        position: relative; overflow: hidden;
+        margin-top: auto;
+    }
+    .btn-service::before {
+        content: ''; position: absolute; top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: left 0.6s;
+    }
+    .btn-service:hover::before { left: 100%; }
+    .btn-service:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(0, 240, 255, 0.4);
+    }
+
+    /* Premium Badge */
+    .premium-badge {
+        position: absolute; top: 24px; right: 24px;
+        background: linear-gradient(135deg, var(--gold), #f59e0b);
+        color: #000; padding: 6px 14px;
+        font-size: 0.7rem; font-weight: 800;
+        border-radius: 100px; letter-spacing: 1px;
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        z-index: 2;
+    }
+
+    .popular-badge {
+        position: absolute; top: -1px; left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000; padding: 6px 20px;
+        border-radius: 0 0 12px 12px;
+        font-size: 0.75rem; font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    /* CTA Bottom */
+    .custom-cta {
+        background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(139,92,246,0.05));
+        border: 1px solid var(--border-soft);
+        border-radius: 28px; padding: 50px;
+        position: relative; overflow: hidden;
+    }
+    .custom-cta::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at 100% 0%, rgba(0,240,255,0.1), transparent 50%);
+        pointer-events: none;
+    }
+
+    .btn-ghost {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-soft);
+        color: white !important; font-weight: 600;
+        padding: 14px 32px; border-radius: 100px;
+        transition: all 0.3s;
+    }
+    .btn-ghost:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.2);
+        transform: translateY(-2px); color: white !important;
+    }
+
+    /* Comparison */
+    .compare-grid {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 24px; padding: 40px;
+        margin-top: 80px;
+    }
+    .compare-row {
+        display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 20px; padding: 18px 0;
+        border-bottom: 1px solid var(--border-soft);
+        align-items: center;
+    }
+    .compare-row:last-child { border: none; }
+    .compare-row.header { font-weight: 700; color: var(--primary); }
+    .compare-check { color: #22c55e; font-size: 1.2rem; }
+    .compare-x { color: rgba(255,255,255,0.2); font-size: 1.2rem; }
+
+    @media (max-width: 768px) {
+        .compare-row { grid-template-columns: 1fr; gap: 8px; padding: 12px 0; }
+    }
+</style>
+
+<div class="container">
+    <!-- HERO -->
+    <section class="services-hero text-center gs-reveal">
+        <span class="section-eyebrow">Catalogue 2026</span>
+        <h1 class="display-huge mb-4">
+            Trois offres.<br>
+            <span class="text-gradient-primary">Aucun compromis.</span>
+        </h1>
+        <p class="lead mx-auto" style="max-width: 680px; color: var(--text-soft); font-size: 1.2rem;">
+            Du MVP qui valide votre marché en 21 jours, à l'écosystème scalable qui propulse votre croissance.
+            Chaque offre inclut <strong class="text-white">code source</strong>, <strong class="text-white">support 30 jours</strong> et <strong class="text-white">garantie satisfait</strong>.
+        </p>
+        
+        <!-- Trust micro-badges -->
+        <div class="d-flex justify-content-center gap-4 flex-wrap mt-5">
+            <div class="d-flex align-items-center gap-2" style="color: var(--text-soft);">
+                <i class="bi bi-shield-check text-primary"></i>
+                <small>Devis sous 24h</small>
+            </div>
+            <div class="d-flex align-items-center gap-2" style="color: var(--text-soft);">
+                <i class="bi bi-arrow-repeat text-primary"></i>
+                <small>Révisions illimitées</small>
+            </div>
+            <div class="d-flex align-items-center gap-2" style="color: var(--text-soft);">
+                <i class="bi bi-cash-coin text-primary"></i>
+                <small>Paiement échelonné possible</small>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES GRID -->
+    <div class="row g-4 justify-content-center mt-4 mb-5 pb-5">
+        {% for service in services %}
+        <div class="col-lg-4 col-md-6 gs-reveal">
+            <div class="service-card {% if loop.index == 2 %}featured{% endif %}">
+                {% if loop.index == 2 %}
+                    <div class="popular-badge">★ LE PLUS CHOISI</div>
+                {% endif %}
+                {% if service.delivery_days <= 7 %}
+                    <div class="premium-badge">⚡ FAST</div>
+                {% endif %}
+
+                <div class="icon-wrapper">
+                    <i class="bi {{ service.icon|default('bi-cpu') }} fs-1 text-primary"></i>
+                </div>
+
+                <h3 class="text-white fw-bold mb-2" style="font-size: 1.5rem;">{{ service.title }}</h3>
+                <p class="small mb-3" style="color: var(--text-soft); min-height: 48px;">
+                    {{ service.description }}
+                </p>
+
+                <div class="delivery-pill">
+                    <i class="bi bi-stopwatch"></i>
+                    <span>Livré en {{ service.delivery_days }} jours</span>
+                </div>
+
+                <div class="price-tag">
+                    <span class="price-currency">$</span>{{ service.price|default('00') }}
+                    <span class="price-period">à partir de</span>
+                </div>
+
+                <ul class="feature-list">
+                    <li><i class="bi bi-check"></i>Code source 100% à vous</li>
+                    <li><i class="bi bi-check"></i>Support technique {{ service.delivery_days }} jours</li>
+                    <li><i class="bi bi-check"></i>Architecture scalable</li>
+                    <li><i class="bi bi-check"></i>Optimisation SEO & Performance</li>
+                    <li><i class="bi bi-check"></i>Formation à la prise en main</li>
+                </ul>
+
+                <a href="{{ url_for('main.contact', interest=service.title) }}" class="btn btn-service w-100">
+                    Démarrer ce projet <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if not services %}
+        <div class="col-lg-8 text-center py-5 gs-reveal">
+            <div class="service-card py-5">
+                <i class="bi bi-tools display-1 text-secondary opacity-25 mb-3"></i>
+                <h3 class="text-white">Catalogue en cours de mise à jour</h3>
+                <p style="color: var(--text-soft);">Les nouvelles offres KAIROS arrivent. Contactez-moi directement pour un devis sur mesure.</p>
+                <a href="{{ url_for('main.contact') }}" class="btn btn-service mt-3">Demander un devis</a>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
-    <div class="row g-4 justify-content-center">
-        {% for service in services %}
-        <div class="col-md-4">
-            <div class="card h-100 bg-dark border-secondary hover-shadow transition">
-                <div class="card-body p-4 p-lg-5 text-center">
-                    <div class="icon-box bg-black rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px; border: 1px solid #0d6efd;">
-                        <i class="bi {{ service.icon }} fs-1 text-primary"></i>
-                    </div>
-                    <h3 class="h4 text-white mb-3 fw-bold">{{ service.title }}</h3>
-                    <p class="text-muted small mb-4">{{ service.description }}</p>
-                    
-                    <div class="py-3 border-top border-bottom border-secondary mb-4">
-                        <div class="d-flex align-items-center justify-content-center mb-2">
-                            <i class="bi bi-lightning-charge text-warning me-2"></i>
-                            <span class="text-light small">Déploiement : {{ service.delivery_days }} jours</span>
-                        </div>
-                        <h2 class="text-primary fw-bold mb-0">{{ service.price }}</h2>
-                    </div>
+    <!-- COMPARATIF (Bezos style) -->
+    <section class="gs-reveal mb-5">
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">Tout est inclus</span>
+            <h2 class="display-huge mb-0" style="font-size: clamp(2rem, 4vw, 3rem);">
+                Ce que vous obtenez <span class="text-gradient-primary">vraiment</span>
+            </h2>
+        </div>
+        
+        <div class="compare-grid">
+            <div class="compare-row header">
+                <div>Inclusions</div>
+                <div class="text-center small">MVP</div>
+                <div class="text-center small">Pro</div>
+                <div class="text-center small">Scale</div>
+            </div>
+            <div class="compare-row">
+                <div>Code source propriétaire</div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+            </div>
+            <div class="compare-row">
+                <div>Design responsive sur-mesure</div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+            </div>
+            <div class="compare-row">
+                <div>Espace administrateur</div>
+                <div class="text-center"><i class="bi bi-x-circle compare-x"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+            </div>
+            <div class="compare-row">
+                <div>Intégration paiement (Mobile Money, Stripe)</div>
+                <div class="text-center"><i class="bi bi-x-circle compare-x"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+            </div>
+            <div class="compare-row">
+                <div>Architecture cloud scalable</div>
+                <div class="text-center"><i class="bi bi-x-circle compare-x"></i></div>
+                <div class="text-center"><i class="bi bi-x-circle compare-x"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+            </div>
+            <div class="compare-row">
+                <div>Optimisation SEO avancée</div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+                <div class="text-center"><i class="bi bi-check-circle-fill compare-check"></i></div>
+            </div>
+            <div class="compare-row">
+                <div>Support après livraison</div>
+                <div class="text-center small text-secondary">7j</div>
+                <div class="text-center small text-primary fw-bold">30j</div>
+                <div class="text-center small text-warning fw-bold">90j</div>
+            </div>
+        </div>
+    </section>
 
-                    <a href="{{ url_for('main.contact', interest=service.title) }}" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
-                        Lancer le projet <i class="bi bi-arrow-right ms-2"></i>
+    <!-- CTA CUSTOM -->
+    <section class="py-5 gs-reveal mb-5">
+        <div class="custom-cta">
+            <div class="row align-items-center position-relative">
+                <div class="col-md-7">
+                    <span class="section-eyebrow">Sur mesure</span>
+                    <h2 class="fw-bold mb-3" style="font-size: 2.2rem;">
+                        Votre projet ne rentre dans aucune <span class="text-gradient-primary">case</span> ?
+                    </h2>
+                    <p class="mb-0" style="color: var(--text-soft); font-size: 1.05rem;">
+                        Tant mieux. Les meilleurs projets sont ceux qui sortent du moule.
+                        Décrivez-moi votre vision, je vous propose un pack 100% taillé pour vous.
+                    </p>
+                </div>
+                <div class="col-md-5 text-md-end mt-4 mt-md-0">
+                    <a href="{{ url_for('main.contact') }}" class="btn-service" style="display:inline-block;text-decoration:none;padding:16px 36px;">
+                        Discuter en privé →
                     </a>
                 </div>
             </div>
         </div>
-        {% endfor %}
-    </div>
+    </section>
 </div>
+{% endblock %}
 
-<style>
-    .hover-shadow:hover { 
-        transform: translateY(-10px); 
-        border-color: #0d6efd !important; 
-        box-shadow: 0 10px 30px rgba(13, 110, 253, 0.15) !important;
-    }
-    .transition { transition: all 0.3s ease; }
-</style>
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        gsap.registerPlugin(ScrollTrigger);
+        document.querySelectorAll('.gs-reveal').forEach((el, i) => {
+            gsap.fromTo(el, 
+                { y: 60, opacity: 0 },
+                {
+                    scrollTrigger: { trigger: el, start: "top 88%", once: true },
+                    y: 0, opacity: 1, duration: 1, delay: i * 0.05, ease: "power3.out"
+                }
+            );
+        });
+
+        // Spotlight effect
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+                card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+            });
+        });
+    });
+</script>
 {% endblock %}

@@ -3,72 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Kairos Portfolio{% endblock %}</title>
+    <meta name="description" content="Kairos - Studio digital premium à Lubumbashi. Solutions web sur-mesure, Python/Flask, design immersif.">
+    <meta name="theme-color" content="#050505">
+    
+    <title>{% block title %}KAIROS — Studio Digital Premium{% endblock %}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* Ajustement Navbar pour le thème sombre */
-        .navbar {
-            background: rgba(15, 23, 42, 0.8) !important; /* Fusion avec dark-bg */
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        :root {
+            --primary: #00f0ff;
+            --primary-dark: #3b82f6;
+            --accent: #8b5cf6;
+            --gold: #d4af37;
+            --dark-bg: #050505;
+            --surface: #0d0d0f;
+            --surface-2: #141417;
+            --glass: rgba(13, 13, 15, 0.75);
+            --text-muted: #71717a;
+            --text-soft: #a1a1aa;
+            --border-soft: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(0, 240, 255, 0.3);
         }
-        .nav-link { color: #f1f5f9 !important; font-weight: 500; }
-        .nav-link:hover { color: var(--primary) !important; }
-        .navbar-brand { color: #ffffff !important; }
+
+        * { -webkit-tap-highlight-color: transparent; }
         
-        /* Bouton WhatsApp Flottant */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: #25d366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50px;
-            text-align: center;
-            font-size: 30px;
-            box-shadow: 0 0 20px rgba(37, 211, 102, 0.4);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: transform 0.3s;
+        ::selection { background: var(--primary); color: #000; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--dark-bg); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(var(--primary), var(--accent)); border-radius: 10px; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none; /* Custom cursor */
         }
-        .whatsapp-float:hover { transform: scale(1.1); color: white; }
+        
+        @media (max-width: 991px) { body { cursor: auto; } }
+
+        h1, h2, h3, h4, h5, .navbar-brand, .display-huge { 
+            font-family: 'Outfit', sans-serif; 
+            letter-spacing: -0.02em;
+        }
+
+        /* ===== CURSOR CUSTOM (Touche Premium) ===== */
+        .cursor-dot, .cursor-ring {
+            position: fixed; top: 0; left: 0; pointer-events: none;
+            border-radius: 50%; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+        .cursor-dot { width: 6px; height: 6px; background: var(--primary); }
+        .cursor-ring { 
+            width: 35px; height: 35px; border: 1.5px solid var(--primary); 
+            transition: width 0.3s, height 0.3s, background 0.3s, transform 0.1s;
+        }
+        .cursor-ring.hover { width: 60px; height: 60px; background: rgba(0, 240, 255, 0.1); }
+        @media (max-width: 991px) { .cursor-dot, .cursor-ring { display: none; } }
+
+        /* ===== PRELOADER (Jobs : First Impression) ===== */
+        .preloader {
+            position: fixed; inset: 0; background: var(--dark-bg);
+            z-index: 99999; display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .preloader-logo {
+            font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: pulse 1.2s ease-in-out infinite;
+            letter-spacing: 8px;
+        }
+        @keyframes pulse { 
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+
+        /* ===== NAVBAR LUXE ===== */
+        .navbar {
+            background: transparent !important;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 25px 0;
+            z-index: 1050;
+        }
+
+        .navbar.scrolled { padding: 12px 0; }
+        .navbar.scrolled .container {
+            background: var(--glass);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--border-soft);
+            border-radius: 100px;
+            padding: 8px 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02);
+        }
+
+        .navbar-brand { 
+            font-size: 1.4rem; letter-spacing: 4px; text-transform: uppercase; 
+            color: #ffffff !important; font-weight: 800;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .navbar-brand .logo-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 15px var(--primary); }
+            50% { box-shadow: 0 0 25px var(--primary), 0 0 40px var(--primary); }
+        }
+
+        .nav-link { 
+            color: var(--text-soft) !important; font-weight: 500; 
+            margin: 0 8px; position: relative; font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active { color: #ffffff !important; }
+        
+        .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -4px; left: 50%; 
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease; transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        .nav-link:hover::after, .nav-link.active::after { width: 70%; }
+
+        .btn-cta-nav {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #000 !important; font-weight: 700;
+            padding: 8px 20px; border-radius: 100px;
+            border: none; transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 240, 255, 0.2);
+        }
+        .btn-cta-nav:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.4);
+            color: #000 !important;
+        }
+
+        /* ===== BLOBS ===== */
+        .blob { 
+            position: fixed; filter: blur(100px); z-index: -1; 
+            opacity: 0.2; animation: float 18s infinite alternate;
+            will-change: transform;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: var(--primary-dark); }
+        .blob-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: var(--accent); animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 50%; width: 400px; height: 400px; background: var(--primary); opacity: 0.1; animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.05); }
+            100% { transform: translate(60px, 40px) scale(1.1); }
+        }
+
+        /* ===== WHATSAPP FLOAT (Repensé) ===== */
+        .whatsapp-float {
+            position: fixed; bottom: 30px; right: 30px;
+            background: linear-gradient(135deg, #25d366, #128c7e); 
+            color: white; width: 65px; height: 65px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 32px; z-index: 998; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 35px rgba(37, 211, 102, 0.4); 
+            text-decoration: none;
+        }
+        .whatsapp-float::before {
+            content: ''; position: absolute; inset: -5px;
+            border-radius: 50%; border: 2px solid #25d366;
+            opacity: 0.4; animation: ripple 2s ease-out infinite;
+        }
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .whatsapp-float:hover { 
+            transform: scale(1.1) rotate(-8deg); color: white; 
+            box-shadow: 0 15px 45px rgba(37, 211, 102, 0.6);
+        }
+        .whatsapp-tooltip {
+            position: absolute; right: 80px; top: 50%; transform: translateY(-50%) translateX(10px);
+            background: var(--surface); color: white; padding: 8px 16px;
+            border-radius: 30px; font-size: 0.85rem; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: all 0.3s;
+            border: 1px solid var(--border-soft); font-family: 'Inter', sans-serif;
+        }
+        .whatsapp-float:hover .whatsapp-tooltip { 
+            opacity: 1; transform: translateY(-50%) translateX(0);
+        }
+
+        /* ===== FOOTER PREMIUM ===== */
+        footer {
+            background: linear-gradient(180deg, transparent, var(--surface) 30%);
+            border-top: 1px solid var(--border-soft);
+            padding: 80px 0 30px;
+            position: relative;
+        }
+        footer::before {
+            content: ''; position: absolute; top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 200px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+        .footer-link {
+            color: var(--text-soft); text-decoration: none;
+            transition: all 0.3s; position: relative;
+            display: inline-block;
+        }
+        .footer-link:hover { 
+            color: var(--primary); transform: translateX(4px);
+        }
+        .social-icon {
+            width: 42px; height: 42px; border-radius: 50%;
+            border: 1px solid var(--border-soft);
+            display: inline-flex; align-items: center; justify-content: center;
+            color: var(--text-soft); text-decoration: none;
+            transition: all 0.3s;
+        }
+        .social-icon:hover {
+            background: var(--primary); color: #000;
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.3);
+        }
+
+        /* ===== UTILITAIRES ===== */
+        .badge-live {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e; padding: 6px 16px;
+            border-radius: 100px; font-size: 0.85rem; font-weight: 500;
+        }
+        .badge-live .dot {
+            width: 8px; height: 8px; background: #22c55e;
+            border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        /* ===== SCROLL PROGRESS ===== */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            z-index: 9999; width: 0%;
+            transition: width 0.1s;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* ===== DROPDOWN ADMIN ===== */
+        .dropdown-menu {
+            background: var(--surface) !important;
+            border: 1px solid var(--border-soft) !important;
+            border-radius: 16px !important;
+            padding: 8px !important;
+            margin-top: 10px !important;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .dropdown-item {
+            border-radius: 10px; padding: 10px 16px !important;
+            color: var(--text-soft) !important;
+            transition: all 0.2s;
+        }
+        .dropdown-item:hover {
+            background: rgba(0, 240, 255, 0.1) !important;
+            color: var(--primary) !important;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-logo">KAIROS</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Background Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
-                <i class="bi bi-code-square me-2 text-primary"></i>KAIROS
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <span class="logo-dot"></span>
+                KAIROS
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <i class="bi bi-list text-white fs-2"></i>
+                <i class="bi bi-list text-white fs-1"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Accueil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about') }}">À propos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.projects') }}">Projets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about') }}">À Propos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.projects') }}">Travaux</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.services') }}">Services</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn-cta-nav nav-link" href="{{ url_for('main.contact') }}">
+                            Démarrer →
+                        </a>
+                    </li>
                     
                     {% if current_user.is_authenticated and current_user.is_admin %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-info" href="#" role="button" data-bs-toggle="dropdown">Admin</a>
-                        <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('admin.projects') }}">Projets</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('admin.skills') }}">Compétences</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Déconnexion</a></li>
+                    <li class="nav-item dropdown ms-lg-2">
+                        <a class="btn btn-outline-light btn-sm rounded-pill px-3 dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-shield-lock me-1"></i>Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.projects') }}"><i class="bi bi-folder me-2"></i>Projets</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.skills') }}"><i class="bi bi-bar-chart me-2"></i>Compétences</a></li>
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a></li>
                         </ul>
                     </li>
                     {% endif %}
@@ -77,65 +343,134 @@
         </div>
     </nav>
 
-    <main class="pt-5 mt-4">
-        {% block content %}{% endblock %}
-    </main>
+    <main>{% block content %}{% endblock %}</main>
 
-    <footer class="bg-dark text-white py-5 mt-5 border-top border-secondary">
+    <!-- Footer Premium -->
+    <footer>
         <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h5 class="fw-bold mb-3 text-primary">Kairos-Kalema</h5>
-                    <p class="small text-muted">Architecte de solutions digitales basé à Lubumbashi. Je transforme vos défis techniques en interfaces fluides et robustes.</p>
-                    <div class="mt-3">
-                        <span class="badge bg-success border-0 px-3 py-2">Disponible pour projets</span>
+            <div class="row g-5 mb-5">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="logo-dot" style="width:10px;height:10px;border-radius:50%;background:var(--primary);box-shadow:0 0 15px var(--primary);"></span>
+                        <h5 class="fw-bold mb-0 text-white" style="letter-spacing:3px;">KAIROS</h5>
+                    </div>
+                    <p class="text-soft" style="color: var(--text-soft);">
+                        L'instant décisif où votre vision rencontre l'excellence digitale. 
+                        Studio basé à Lubumbashi, livraison mondiale.
+                    </p>
+                    <div class="mt-4">
+                        <span class="badge-live">
+                            <span class="dot"></span>
+                            Disponible — 2 places ce mois
+                        </span>
                     </div>
                 </div>
-
-                <div class="col-md-2">
-                    <h5 class="fw-bold mb-3">Plan du site</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ url_for('main.index') }}" class="text-muted text-decoration-none hover-white">Accueil</a></li>
-                        <li><a href="{{ url_for('main.about') }}" class="text-muted text-decoration-none">À propos</a></li>
-                        <li><a href="{{ url_for('main.projects') }}" class="text-muted text-decoration-none">Projets</a></li>
-                        <li><a href="{{ url_for('main.contact') }}" class="text-muted text-decoration-none">Contact</a></li>
+                
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="fw-bold mb-3 text-white text-uppercase" style="letter-spacing:2px;font-size:0.8rem;">Plan</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="{{ url_for('main.index') }}" class="footer-link">Accueil</a></li>
+                        <li class="mb-2"><a href="{{ url_for('main.about') }}" class="footer-link">À propos</a></li>
+                        <li class="mb-2"><a href="{{ url_for('main.projects') }}" class="footer-link">Projets</a></li>
+                        <li class="mb-2"><a href="{{ url_for('main.contact') }}" class="footer-link">Contact</a></li>
                     </ul>
                 </div>
-
-                <div class="col-md-3">
-                    <h5 class="fw-bold mb-3">Engagements</h5>
-                    <ul class="list-unstyled small text-muted">
-                        <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Livraison haute performance</li>
-                        <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>SEO & Design attractif</li>
-                        <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Code propre & maintenable</li>
-                        <li class="mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Suivi ultra-personnalisé</li>
+                
+                <div class="col-6 col-md-3 col-lg-3">
+                    <h6 class="fw-bold mb-3 text-white text-uppercase" style="letter-spacing:2px;font-size:0.8rem;">Promesse</h6>
+                    <ul class="list-unstyled small" style="color: var(--text-soft);">
+                        <li class="mb-2"><i class="bi bi-shield-check text-primary me-2"></i>Code propre & maintenable</li>
+                        <li class="mb-2"><i class="bi bi-lightning-charge text-primary me-2"></i>Performance &lt; 2s</li>
+                        <li class="mb-2"><i class="bi bi-eye text-primary me-2"></i>Design qui convertit</li>
+                        <li class="mb-2"><i class="bi bi-headset text-primary me-2"></i>Support 30 jours offerts</li>
                     </ul>
                 </div>
-
+                
                 <div class="col-md-3">
-                    <h5 class="fw-bold mb-3">Restons connectés</h5>
-                    <p class="small text-muted"><i class="bi bi-geo-alt me-2"></i> Lubumbashi, RDC</p>
-                    <div class="d-flex gap-3 fs-5">
-                        <a href="#" class="text-white hover-primary"><i class="bi bi-github"></i></a>
-                        <a href="#" class="text-white hover-primary"><i class="bi bi-linkedin"></i></a>
-                        <a href="https://wa.me/243895288981" class="text-white hover-primary"><i class="bi bi-whatsapp"></i></a>
+                    <h6 class="fw-bold mb-3 text-white text-uppercase" style="letter-spacing:2px;font-size:0.8rem;">Connexion</h6>
+                    <p class="small mb-3" style="color: var(--text-soft);">
+                        <i class="bi bi-geo-alt me-2 text-primary"></i> Lubumbashi, RDC<br>
+                        <i class="bi bi-envelope me-2 text-primary"></i> hello@kairos.cd
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="https://github.com/vainqueur05" class="social-icon" aria-label="GitHub"><i class="bi bi-github"></i></a>
+                        <a href="#" class="social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-icon" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://wa.me/243895288981" class="social-icon" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
                     </div>
                 </div>
             </div>
-            <hr class="my-4 opacity-25">
-            <div class="text-center small text-muted">
-                <p class="mb-0">&copy; 2026 KAIROS Portfolio. Conçu avec précision à Lubumbashi.</p>
+            
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-4" style="border-top: 1px solid var(--border-soft);">
+                <p class="mb-0 small" style="color: var(--text-muted);">
+                    © 2026 KAIROS · Conçu avec passion par <span class="text-white">Vainqueur Kalema</span>
+                </p>
+                <p class="mb-0 small mt-2 mt-md-0" style="color: var(--text-muted);">
+                    <span class="text-primary">●</span> Tous les systèmes opérationnels
+                </p>
             </div>
         </div>
     </footer>
 
-    <a href="https://wa.me/243895288981?text=Bonjour%20Vainqueur%2C%20je%20souhaite%20discuter%20d'un%20projet" class="whatsapp-float" target="_blank">
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/243895288981?text=Bonjour%20Vainqueur%2C%20je%20souhaite%20discuter%20d'un%20projet" 
+       class="whatsapp-float" target="_blank" rel="noopener">
         <i class="bi bi-whatsapp"></i>
+        <span class="whatsapp-tooltip">Discutons en 30 secondes 👋</span>
     </a>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <script>
+        // Preloader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 600);
+        });
+
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+
+            // Scroll progress
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scrollProgress').style.width = scrolled + '%';
+        });
+
+        // Custom Cursor
+        if (window.innerWidth > 991) {
+            const dot = document.querySelector('.cursor-dot');
+            const ring = document.querySelector('.cursor-ring');
+            let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+                dot.style.left = mouseX + 'px';
+                dot.style.top = mouseY + 'px';
+            });
+
+            const animateRing = () => {
+                ringX += (mouseX - ringX) * 0.15;
+                ringY += (mouseY - ringY) * 0.15;
+                ring.style.left = ringX + 'px';
+                ring.style.top = ringY + 'px';
+                requestAnimationFrame(animateRing);
+            };
+            animateRing();
+
+            document.querySelectorAll('a, button, .bento-card, input, textarea').forEach(el => {
+                el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+                el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+            });
+        }
+    </script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

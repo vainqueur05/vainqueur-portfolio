@@ -1,23 +1,167 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>{{ 'Modifier' if stat else 'Ajouter' }} une statistique</h1>
-    <form method="POST">
-        <div class="mb-3">
-            <label class="form-label">Label</label>
-            <input type="text" name="label" class="form-control" value="{{ stat.label if stat else '' }}" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Valeur (ex: 15+, 98%, 24/7)</label>
-            <input type="text" name="value" class="form-control" value="{{ stat.value if stat else '' }}" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Icône Bootstrap (ex: bi-folder)</label>
-            <input type="text" name="icon" class="form-control" value="{{ stat.icon if stat else 'bi-bar-chart' }}">
-        </div>
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-        <a href="{{ url_for('admin.stats') }}" class="btn btn-secondary">Annuler</a>
-    </form>
+<style>
+    /* Alignement Navbar */
+    body { padding-top: 100px; background-color: #050505 !important; color: #f0f0f0; }
+
+    .stat-editor-card {
+        background: rgba(10, 10, 10, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 40px;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .form-label {
+        color: #888;
+        text-transform: uppercase;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        color: white !important;
+        padding: 15px;
+        font-weight: 500;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd !important;
+        background: rgba(13, 110, 253, 0.02) !important;
+        box-shadow: 0 0 20px rgba(13, 110, 253, 0.1) !important;
+    }
+
+    /* Preview Box Stylisée */
+    .stat-preview {
+        background: linear-gradient(145deg, #0f0f0f, #050505);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 25px;
+        text-align: center;
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .preview-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(to bottom, #fff, #666);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+    }
+
+    .preview-icon-wrapper {
+        width: 45px;
+        height: 45px;
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+
+    .btn-save-stat {
+        background: #fff;
+        color: #000;
+        border: none;
+        padding: 15px 35px;
+        border-radius: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+    }
+    .btn-save-stat:hover {
+        background: #0d6efd;
+        color: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+    }
+</style>
+
+<div class="container mt-2 fade-up" style="max-width: 900px;">
+    <div class="mb-5">
+        <h2 class="text-white fw-bold m-0">{{ 'Éditer la' if stat else 'Nouvelle' }} Statistique</h2>
+        <p class="text-muted small">Configurez les chiffres clés de votre impact professionnel.</p>
+    </div>
+
+    <div class="stat-editor-card">
+        <form method="POST">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="mb-4">
+                        <label class="form-label">Titre (Label)</label>
+                        <input type="text" name="label" id="labelInput" class="form-control" 
+                               placeholder="ex: Projets Terminés" 
+                               value="{{ stat.label if stat else '' }}" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Valeur (Value)</label>
+                            <input type="text" name="value" id="valueInput" class="form-control font-monospace" 
+                                   placeholder="ex: 150+" 
+                                   value="{{ stat.value if stat else '' }}" required>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">Icône (Bootstrap)</label>
+                            <input type="text" name="icon" id="iconInput" class="form-control" 
+                                   placeholder="bi-check-circle" 
+                                   value="{{ stat.icon if stat else 'bi-bar-chart' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <label class="form-label d-block text-center mb-3">Aperçu en direct</label>
+                    <div class="stat-preview shadow-lg">
+                        <div class="preview-icon-wrapper shadow-sm">
+                            <i id="pIcon" class="bi {{ stat.icon if stat else 'bi-bar-chart' }}"></i>
+                        </div>
+                        <div id="pValue" class="preview-value">{{ stat.value if stat else '00' }}</div>
+                        <div id="pLabel" class="text-muted small fw-bold mt-2 text-uppercase letter-spacing-1">{{ stat.label if stat else 'LABEL_ID' }}</div>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-5 pt-4 border-top border-white border-opacity-5 d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('admin.stats') }}" class="text-muted text-decoration-none small fw-bold">
+                        <i class="bi bi-chevron-left me-1"></i> RETOUR
+                    </a>
+                    <button type="submit" class="btn btn-save-stat">
+                        CONFIRMER_DATA <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script>
+    const labelInput = document.getElementById('labelInput');
+    const valueInput = document.getElementById('valueInput');
+    const iconInput = document.getElementById('iconInput');
+
+    const pLabel = document.getElementById('pLabel');
+    const pValue = document.getElementById('pValue');
+    const pIcon = document.getElementById('pIcon');
+
+    labelInput.addEventListener('input', (e) => pLabel.innerText = e.target.value || 'LABEL_ID');
+    valueInput.addEventListener('input', (e) => pValue.innerText = e.target.value || '00');
+    iconInput.addEventListener('input', (e) => pIcon.className = 'bi ' + (e.target.value || 'bi-bar-chart'));
+</script>
 {% endblock %}

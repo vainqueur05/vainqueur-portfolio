@@ -1,57 +1,152 @@
 {% extends 'base.html' %}
 
+{% block title %}Identité & Bio | Kairos Admin{% endblock %}
+
 {% block content %}
-<div class="container mt-5 fade-up">
-    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-secondary pb-3">
+<style>
+    .admin-bio-container { padding-top: 120px; padding-bottom: 80px; }
+    
+    .glass-card {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 30px;
+        padding: 40px;
+        height: 100%;
+    }
+
+    .form-label-premium {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--primary);
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .input-studio {
+        background: rgba(0, 0, 0, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 12px 18px;
+        transition: all 0.3s ease;
+    }
+
+    .input-studio:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.05) !important;
+    }
+
+    /* Avatar Upload Styling */
+    .avatar-wrapper {
+        position: relative;
+        width: 180px;
+        height: 180px;
+        margin: 0 auto;
+    }
+
+    .avatar-preview {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--surface);
+        box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .avatar-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+    .avatar-wrapper:hover .avatar-overlay { opacity: 1; }
+
+    /* Custom Switch */
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        background-color: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.2);
+        cursor: pointer;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .availability-box {
+        background: rgba(25, 135, 84, 0.05);
+        border: 1px solid rgba(25, 135, 84, 0.15);
+        border-radius: 20px;
+        padding: 20px;
+    }
+</style>
+
+<div class="container admin-bio-container">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gs-reveal">
         <div>
-            <h1 class="text-white fw-bold"><i class="bi bi-person-gear me-2 text-primary"></i>Configuration d'Identité</h1>
-            <p class="text-muted mb-0 small">Gérez vos informations publiques et votre statut de disponibilité.</p>
+            <h1 class="text-white fw-bold display-6 mb-1">Configuration d'Identité</h1>
+            <p class="text-secondary mb-0">Définissez comment le monde perçoit la marque <strong>Kairos</strong>.</p>
         </div>
-        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light btn-sm">
-            <i class="bi bi-arrow-left me-1"></i> Retour Dashboard
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4 mt-3 mt-md-0">
+            <i class="bi bi-arrow-left me-2"></i>Dashboard
         </a>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" class="row g-5">
-        <div class="col-lg-8">
-            <div class="card bg-dark border-secondary p-4 shadow-sm">
-                <h5 class="text-white mb-4"><i class="bi bi-info-circle me-2 text-primary"></i>Informations Générales</h5>
+    <form method="POST" enctype="multipart/form-data" class="row g-4">
+        <div class="col-lg-8 gs-reveal">
+            <div class="glass-card shadow-lg">
+                <h5 class="text-white fw-bold mb-4 d-flex align-items-center">
+                    <i class="bi bi-person-lines-fill text-primary me-3"></i>Profil Public
+                </h5>
                 
-                <div class="row g-3">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Nom complet</label>
-                        <input type="text" name="name" class="form-control bg-secondary text-white border-0" value="{{ bio.name if bio else '' }}" required>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label-premium">Nom Complet</label>
+                        <input type="text" name="name" class="form-control input-studio" 
+                               value="{{ bio.name if bio else '' }}" required>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Titre professionnel</label>
-                        <input type="text" name="title" class="form-control bg-secondary text-white border-0" value="{{ bio.title if bio else '' }}" placeholder="Ex: Fullstack Developer">
+                    <div class="col-md-6">
+                        <label class="form-label-premium">Titre Professionnel</label>
+                        <input type="text" name="title" class="form-control input-studio" 
+                               value="{{ bio.title if bio else '' }}" placeholder="ex: Architecte Logiciel & Data">
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label-premium">Pitch Bio (Introduction)</label>
+                        <textarea name="bio_text" class="form-control input-studio" rows="6" 
+                                  placeholder="Décrivez votre expertise en quelques phrases percutantes...">{{ bio.bio_text if bio else '' }}</textarea>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label-premium">E-mail de Contact</label>
+                        <input type="email" name="email" class="form-control input-studio" value="{{ bio.email if bio else '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label-premium">Téléphone</label>
+                        <input type="text" name="phone" class="form-control input-studio" value="{{ bio.phone if bio else '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label-premium">Ville / Pays</label>
+                        <input type="text" name="location" class="form-control input-studio" value="{{ bio.location if bio else '' }}">
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label text-muted small text-uppercase fw-bold">Biographie (Pitch)</label>
-                    <textarea name="bio_text" class="form-control bg-secondary text-white border-0" rows="6">{{ bio.bio_text if bio else '' }}</textarea>
-                </div>
-
-                <div class="row g-3">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Email</label>
-                        <input type="email" name="email" class="form-control bg-secondary text-white border-0" value="{{ bio.email if bio else '' }}">
+                <div class="availability-box mt-5 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-white fw-bold mb-1">Disponibilité immédiate</h6>
+                        <p class="text-secondary small mb-0">Affiche un badge "Open to Work" sur votre profil.</p>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Téléphone</label>
-                        <input type="text" name="phone" class="form-control bg-secondary text-white border-0" value="{{ bio.phone if bio else '' }}">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label text-muted small text-uppercase fw-bold">Localisation</label>
-                        <input type="text" name="location" class="form-control bg-secondary text-white border-0" value="{{ bio.location if bio else '' }}">
-                    </div>
-                </div>
-
-                <div class="mt-4 p-3 rounded bg-black d-flex align-items-center justify-content-between border border-secondary">
-                    <label class="form-check-label text-white mb-0" for="availability">
-                        <i class="bi bi-broadcast text-success me-2"></i>Disponible pour missions
-                    </label>
                     <div class="form-check form-switch">
                         <input type="checkbox" name="availability" class="form-check-input" id="availability" value="1" {% if bio and bio.availability %}checked{% endif %}>
                     </div>
@@ -60,30 +155,63 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card bg-dark border-secondary p-4 mb-4 text-center">
-                <h5 class="text-white mb-4 small text-uppercase fw-bold">Photo de Profil</h5>
-                <div class="position-relative d-inline-block mb-3">
-                    {% if bio and bio.avatar %}
-                        <img src="{{ url_for('static', filename='uploads/' + bio.avatar) }}" class="rounded-circle border border-primary p-1 shadow" style="width: 150px; height: 150px; object-fit: cover;">
-                    {% else %}
-                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto" style="width: 150px; height: 150px;">
-                            <i class="bi bi-person text-white-50 fs-1"></i>
+            <div class="row g-4">
+                <div class="col-12 gs-reveal">
+                    <div class="glass-card text-center">
+                        <label class="form-label-premium mb-4">Portrait Officiel</label>
+                        
+                        <div class="avatar-wrapper mb-4">
+                            {% if bio and bio.avatar %}
+                                <img src="{{ url_for('static', filename='uploads/' + bio.avatar) }}" id="preview-img" class="avatar-preview">
+                            {% else %}
+                                <div id="preview-placeholder" class="avatar-preview bg-secondary d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person display-4 text-white-50"></i>
+                                </div>
+                            {% endif %}
+                            <label for="avatar-upload" class="avatar-overlay">
+                                <i class="bi bi-camera-fill text-white fs-3"></i>
+                            </label>
                         </div>
-                    {% endif %}
-                </div>
-                <input type="file" name="avatar" class="form-control form-control-sm bg-secondary border-0 text-white">
-                <p class="text-muted small mt-2">Format suggéré : Carré (1:1)</p>
-            </div>
 
-            <div class="card bg-dark border-primary p-4">
-                <button type="submit" class="btn btn-primary w-100 mb-3 py-2 fw-bold">
-                    <i class="bi bi-save me-2"></i>Enregistrer les modifications
-                </button>
-                <p class="text-muted small text-center mb-0">
-                    <i class="bi bi-info-circle me-1"></i> Les modifications seront visibles immédiatement sur votre portfolio.
-                </p>
+                        <input type="file" name="avatar" id="avatar-upload" class="d-none" onchange="previewImage(event)">
+                        <p class="text-muted small">Cliquez sur l'image pour modifier.<br>Format recommandé : 500x500px</p>
+                    </div>
+                </div>
+
+                <div class="col-12 gs-reveal">
+                    <div class="glass-card" style="border-color: var(--primary);">
+                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-lg mb-3">
+                            <i class="bi bi-check-circle-fill me-2"></i>Publier les changements
+                        </button>
+                        <p class="text-center text-secondary small mb-0">
+                            Dernière mise à jour : <br><strong>{{ bio.updated_at.strftime('%d/%m/%Y') if bio and bio.updated_at else 'Jamais' }}</strong>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
 </div>
+
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            let output = document.getElementById('preview-img');
+            if(!output) {
+                const placeholder = document.getElementById('preview-placeholder');
+                output = document.createElement('img');
+                output.id = 'preview-img';
+                output.className = 'avatar-preview';
+                placeholder.replaceWith(output);
+            }
+            output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        gsap.from(".gs-reveal", { y: 20, opacity: 0, duration: 0.8, stagger: 0.2 });
+    });
+</script>
 {% endblock %}

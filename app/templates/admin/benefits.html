@@ -1,52 +1,161 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<div class="container mt-5 fade-up">
-    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-secondary pb-3">
-        <div>
-            <h1 class="text-white fw-bold"><i class="bi bi-gem me-2 text-primary"></i>Bénéfices Clients</h1>
-            <p class="text-muted mb-0 small">Gérez les arguments clés de votre offre de service.</p>
-        </div>
-        <a href="{{ url_for('admin.benefit_new') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i> Ajouter une Valeur
-        </a>
-    </div>
+{% block title %}Gestion des Bénéfices | Kairos Admin{% endblock %}
 
-    <div class="row g-4">
+{% block content %}
+<style>
+    .admin-page-header { padding-top: 120px; padding-bottom: 50px; }
+    
+    .benefit-admin-card {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        position: relative;
+    }
+
+    .benefit-admin-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+
+    .icon-box-admin {
+        width: 64px;
+        height: 64px;
+        background: rgba(0, 240, 255, 0.05);
+        border: 1px solid rgba(0, 240, 255, 0.1);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+    }
+
+    .benefit-admin-card:hover .icon-box-admin {
+        background: var(--primary);
+        color: #000 !important;
+    }
+
+    .benefit-admin-card:hover .icon-box-admin i {
+        color: #000 !important;
+    }
+
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+    .btn-edit-tool { background: rgba(255,255,255,0.05); color: #fff; }
+    .btn-edit-tool:hover { background: var(--primary); color: #000; }
+
+    .btn-delete-tool { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: none; }
+    .btn-delete-tool:hover { background: #dc3545; color: #fff; }
+
+    /* Empty state design */
+    .empty-state {
+        border: 2px dashed rgba(255, 255, 255, 0.05);
+        border-radius: 30px;
+        padding: 80px 40px;
+    }
+</style>
+
+<div class="container">
+    <header class="admin-page-header gs-reveal">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-4">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small fw-bold">PANEL ADMIN</span>
+                    <span class="text-secondary">/</span>
+                    <span class="text-white-50 small">Stratégie</span>
+                </div>
+                <h1 class="display-5 fw-bold text-white mb-0">Bénéfices <span class="text-primary">Clients</span></h1>
+                <p class="text-secondary mt-2 mb-0">Gérez les piliers de votre proposition de valeur Kairos.</p>
+            </div>
+            <div>
+                <a href="{{ url_for('admin.benefit_new') }}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow">
+                    <i class="bi bi-plus-lg me-2"></i>Nouvel Argument
+                </a>
+            </div>
+        </div>
+        <hr class="mt-5 border-secondary opacity-10">
+    </header>
+
+    <div class="row g-4 mb-5">
         {% for b in benefits %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card bg-dark border-secondary h-100 shadow-sm hover-border-primary">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="bg-black rounded p-3 border border-secondary">
-                            <i class="bi {{ b.icon }} text-primary fs-3"></i>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" href="{{ url_for('admin.benefit_edit', id=b.id) }}"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{ url_for('admin.benefit_delete', id=b.id) }}" method="POST">
-                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Supprimer ce bénéfice ?')">
-                                            <i class="bi bi-trash me-2"></i>Supprimer
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+        <div class="col-md-6 col-lg-4 gs-reveal">
+            <div class="benefit-admin-card p-4">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div class="icon-box-admin">
+                        <i class="bi {{ b.icon }} fs-3 text-primary transition-all"></i>
                     </div>
-                    <h5 class="text-white fw-bold">{{ b.title }}</h5>
-                    <p class="text-muted small mb-0">{{ b.description }}</p>
-                    <div class="mt-3">
-                        <code class="small text-primary-emphasis opacity-50">{{ b.icon }}</code>
+                    
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('admin.benefit_edit', id=b.id) }}" class="action-btn btn-edit-tool" title="Modifier">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="{{ url_for('admin.benefit_delete', id=b.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="action-btn btn-delete-tool" onclick="return confirm('Supprimer ce bénéfice stratégique ?')" title="Supprimer">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
+
+                <h5 class="text-white fw-bold mb-3">{{ b.title }}</h5>
+                <p class="text-secondary small lh-base mb-4" style="height: 4.5rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                    {{ b.description }}
+                </p>
+
+                <div class="pt-3 border-top border-secondary border-opacity-10 d-flex justify-content-between align-items-center">
+                    <span class="badge bg-black border border-secondary border-opacity-25 text-secondary font-monospace small">
+                        {{ b.icon }}
+                    </span>
+                    <span class="text-muted" style="font-size: 0.7rem;">ID: #{{ b.id }}</span>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 gs-reveal">
+            <div class="empty-state text-center">
+                <div class="bg-dark d-inline-block p-4 rounded-circle mb-4 border border-secondary border-opacity-10">
+                    <i class="bi bi-gem display-4 text-secondary opacity-20"></i>
+                </div>
+                <h3 class="text-white fw-bold">Aucun bénéfice enregistré</h3>
+                <p class="text-secondary mx-auto" style="max-width: 400px;">
+                    Commencez par ajouter les avantages qui font la force de vos services pour qu'ils apparaissent sur votre page d'accueil.
+                </p>
+                <a href="{{ url_for('admin.benefit_new') }}" class="btn btn-outline-primary rounded-pill px-4 mt-3">
+                    Ajouter mon premier argument
+                </a>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.from(".gs-reveal", {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: ".container",
+                start: "top 80%"
+            }
+        });
+    });
+</script>
 {% endblock %}

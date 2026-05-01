@@ -1,29 +1,119 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Gestion des services</h1>
-    <a href="{{ url_for('admin.service_new') }}" class="btn btn-primary mb-3">Ajouter un service</a>
-    <table class="table table-striped">
-        <thead>
-            <tr><th>ID</th><th>Titre</th><th>Icône</th><th>Prix</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-            {% for s in services %}
-            <tr>
-                <td>{{ s.id }}</td>
-                <td>{{ s.title }}</td>
-                <td>{{ s.icon }}</td>
-                <td>{{ s.price }}</td>
-                <td>
-                    <a href="{{ url_for('admin.service_edit', id=s.id) }}" class="btn btn-sm btn-warning">Modifier</a>
-                    <form action="{{ url_for('admin.service_delete', id=s.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce service ?')">Supprimer</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<style>
+    /* Ajustement pour la Navbar */
+    body { padding-top: 100px; background-color: #050505 !important; color: #f0f0f0; }
+
+    .service-row {
+        background: #0a0a0a;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 12px;
+        transition: 0.3s ease;
+    }
+    .service-row:hover {
+        border-color: #0d6efd;
+        background: rgba(13, 110, 253, 0.02);
+    }
+
+    .icon-box {
+        width: 45px;
+        height: 45px;
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .price-tag {
+        font-family: 'Fira Code', monospace;
+        color: #00ff88;
+        font-weight: 700;
+        background: rgba(0, 255, 136, 0.05);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    .btn-action {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: 0.2s;
+    }
+</style>
+
+<div class="container mt-2 fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-white border-opacity-10 pb-4">
+        <div>
+            <h1 class="text-white fw-bold m-0"><i class="bi bi-briefcase me-2 text-primary"></i>Nos Services</h1>
+            <p class="text-muted small m-0 mt-1">Catalogue des offres actives</p>
+        </div>
+        <a href="{{ url_for('admin.service_new') }}" class="btn btn-primary px-4 py-2 fw-bold rounded-3">
+            <i class="bi bi-plus-lg me-1"></i> Ajouter un service
+        </a>
+    </div>
+
+    <div class="services-list">
+        <div class="row px-4 mb-2 d-none d-md-flex text-muted small fw-bold text-uppercase" style="letter-spacing: 1px;">
+            <div class="col-md-1">ID</div>
+            <div class="col-md-5">Détails du Service</div>
+            <div class="col-md-3 text-center">Tarification</div>
+            <div class="col-md-3 text-end">Actions</div>
+        </div>
+
+        {% for s in services %}
+        <div class="service-row">
+            <div class="row align-items-center">
+                <div class="col-md-1 d-none d-md-block font-monospace text-muted">
+                    #{{ s.id }}
+                </div>
+
+                <div class="col-md-5">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box me-3">
+                            <i class="bi {{ s.icon if s.icon else 'bi-gear' }}"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-white fw-bold m-0">{{ s.title }}</h6>
+                            <small class="text-muted d-none d-md-block">Code icône: {{ s.icon }}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-center my-3 my-md-0">
+                    <span class="price-tag">{{ s.price }} $</span>
+                </div>
+
+                <div class="col-md-3 text-end">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin.service_edit', id=s.id) }}" class="btn btn-outline-warning btn-action" title="Modifier">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="{{ url_for('admin.service_delete', id=s.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-action" onclick="return confirm('Purger ce service ?')" title="Supprimer">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5 opacity-25">
+            <i class="bi bi-slash-circle fs-1"></i>
+            <p class="mt-2">Aucun service configuré.</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

@@ -1,23 +1,138 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>{{ 'Modifier' if testimonial else 'Ajouter' }} un témoignage</h1>
-    <form method="POST">
-        <div class="mb-3">
-            <label class="form-label">Nom du client</label>
-            <input type="text" name="client_name" class="form-control" value="{{ testimonial.client_name if testimonial else '' }}" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Message</label>
-            <textarea name="message" class="form-control" rows="4">{{ testimonial.message if testimonial else '' }}</textarea>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Note (1-5)</label>
-            <input type="number" name="rating" class="form-control" min="1" max="5" value="{{ testimonial.rating if testimonial else 5 }}">
-        </div>
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-        <a href="{{ url_for('admin.testimonials') }}" class="btn btn-secondary">Annuler</a>
-    </form>
+<style>
+    /* Ajustement global */
+    body { padding-top: 100px; background-color: #050505 !important; color: #f0f0f0; }
+
+    .testimonial-editor-card {
+        background: rgba(15, 15, 15, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: 40px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    .form-label {
+        color: #0d6efd; /* Bleu primaire pour changer du vert/or selon le contexte */
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.02) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        color: white !important;
+        padding: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd !important;
+        background: rgba(13, 110, 253, 0.02) !important;
+        box-shadow: 0 0 20px rgba(13, 110, 253, 0.1) !important;
+    }
+
+    /* Style spécifique pour la citation */
+    .quote-icon {
+        font-size: 2rem;
+        color: rgba(13, 110, 253, 0.2);
+        position: absolute;
+        top: 20px;
+        right: 30px;
+    }
+
+    .rating-display {
+        font-size: 1.5rem;
+        color: #ffc107; /* Or pour les étoiles */
+        letter-spacing: 5px;
+    }
+
+    .btn-save-testimonial {
+        background: #0d6efd;
+        border: none;
+        color: white;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        padding: 15px 40px;
+        border-radius: 12px;
+        transition: 0.4s;
+    }
+
+    .btn-save-testimonial:hover {
+        background: #fff;
+        color: #000;
+        transform: translateY(-3px);
+    }
+</style>
+
+<div class="container mt-2 fade-up" style="max-width: 800px;">
+    <div class="mb-5">
+        <span class="text-muted small text-uppercase fw-bold letter-spacing-2">Social Proof</span>
+        <h2 class="text-white fw-bold m-0">{{ 'Édition du' if testimonial else 'Nouveau' }} Témoignage Client</h2>
+    </div>
+
+    <div class="testimonial-editor-card position-relative">
+        <i class="bi bi-quote quote-icon"></i>
+        
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-8 mb-4">
+                    <label class="form-label">Identité du Client / Entreprise</label>
+                    <input type="text" name="client_name" class="form-control" 
+                           placeholder="ex: Jean Dupont - CEO Jason Sendwe" 
+                           value="{{ testimonial.client_name if testimonial else '' }}" required>
+                </div>
+
+                <div class="col-md-4 mb-4 text-md-end">
+                    <label class="form-label d-block">Évaluation</label>
+                    <div class="rating-display mt-1" id="starPreview">
+                        {% set rating = testimonial.rating|int if testimonial else 5 %}
+                        {% for i in range(5) %}
+                            <i class="bi {{ 'bi-star-fill' if i < rating else 'bi-star' }}"></i>
+                        {% endfor %}
+                    </div>
+                    <input type="range" name="rating" id="ratingInput" class="form-range mt-2" 
+                           min="1" max="5" step="1" value="{{ rating }}">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Contenu du Témoignage</label>
+                <textarea name="message" class="form-control" rows="6" 
+                          placeholder="Saisissez ici le retour d'expérience du client..." required>{{ testimonial.message if testimonial else '' }}</textarea>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top border-white border-opacity-5">
+                <a href="{{ url_for('admin.testimonials') }}" class="text-muted text-decoration-none small fw-bold">
+                    <i class="bi bi-x-circle me-1"></i> ANNULER
+                </a>
+                <button type="submit" class="btn btn-save-testimonial shadow-lg">
+                    PUBLIER LE RETOUR <i class="bi bi-send-fill ms-2"></i>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script>
+    // Mise à jour visuelle des étoiles en temps réel
+    const ratingInput = document.getElementById('ratingInput');
+    const starPreview = document.getElementById('starPreview');
+
+    ratingInput.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        let starsHtml = '';
+        for (let i = 0; i < 5; i++) {
+            starsHtml += i < val ? '<i class="bi bi-star-fill"></i>' : '<i class="bi bi-star"></i>';
+        }
+        starPreview.innerHTML = starsHtml;
+    });
+</script>
 {% endblock %}

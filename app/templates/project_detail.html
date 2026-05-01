@@ -1,54 +1,401 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ project.title }} — Étude de Cas KAIROS{% endblock %}
+
 {% block content %}
-<div class="container py-5 fade-up">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url_for('main.projects') }}" class="text-primary text-decoration-none">Projets</a></li>
-            <li class="breadcrumb-item active text-muted" aria-current="page">{{ project.title }}</li>
-        </ol>
-    </nav>
+<style>
+    .case-hero { padding: 130px 0 40px; }
+    
+    .breadcrumb-modern {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: var(--text-soft); text-decoration: none;
+        font-size: 0.9rem; transition: all 0.3s;
+        padding: 10px 18px; border-radius: 100px;
+        background: var(--surface); border: 1px solid var(--border-soft);
+    }
+    .breadcrumb-modern:hover {
+        color: var(--primary); border-color: var(--border-hover);
+        transform: translateX(-4px);
+    }
 
-    <div class="row g-5">
-        <div class="col-lg-7">
-            <div class="rounded-4 overflow-hidden border border-secondary shadow-lg">
-                <img src="{{ url_for('static', filename='uploads/' + project.image) }}" class="img-fluid w-100" alt="{{ project.title }}">
-            </div>
-        </div>
+    .display-huge { 
+        font-size: clamp(2.2rem, 6vw, 4.5rem); 
+        font-weight: 900; line-height: 1; letter-spacing: -0.03em;
+    }
+    
+    .text-gradient-primary { 
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    
+    .text-gradient-luxury {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--gold) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
 
-        <div class="col-lg-5">
-            <h1 class="text-white fw-bold mb-4 display-6">{{ project.title }}</h1>
-            <div class="mb-4">
-                <h6 class="text-primary text-uppercase small fw-bold mb-2">Contexte & Objectif</h6>
-                <p class="text-muted lh-lg">{{ project.description }}</p>
-            </div>
+    .meta-pills {
+        display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px;
+    }
+    .meta-pill {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        padding: 8px 16px; border-radius: 100px;
+        font-size: 0.85rem; color: var(--text-soft);
+        display: inline-flex; align-items: center; gap: 8px;
+    }
+    .meta-pill i { color: var(--primary); }
 
-            <div class="card bg-black border-secondary p-4 mb-4">
-                <div class="row text-center g-3">
-                    <div class="col-6 border-end border-secondary">
-                        <small class="text-muted d-block mb-1">Client</small>
-                        <span class="text-white fw-bold">{{ project.client or 'Open Source' }}</span>
-                    </div>
-                    <div class="col-6">
-                        <small class="text-muted d-block mb-1">Date</small>
-                        <span class="text-white fw-bold">{{ project.date or '2026' }}</span>
-                    </div>
+    /* Cinematic Image */
+    .project-hero-img {
+        width: 100%; height: 65vh; min-height: 450px;
+        object-fit: cover; border-radius: 30px;
+        border: 1px solid var(--border-soft);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    }
+
+    .image-frame {
+        position: relative; overflow: hidden;
+        border-radius: 30px;
+    }
+    .image-frame::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(5,5,5,0.5) 0%, transparent 30%);
+        pointer-events: none;
+    }
+
+    .bento-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 28px; padding: 40px;
+        transition: all 0.4s ease;
+    }
+    .bento-card:hover { border-color: var(--border-hover); }
+
+    .meta-label {
+        font-size: 0.7rem; text-transform: uppercase;
+        letter-spacing: 3px; color: var(--text-muted);
+        margin-bottom: 6px; display: block;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .meta-value {
+        font-size: 1.05rem; font-weight: 700; color: #fff;
+    }
+
+    /* Tech Pills */
+    .tech-stack { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tech-pill {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-soft);
+        color: var(--text-soft);
+        padding: 10px 18px; border-radius: 100px;
+        font-size: 0.85rem; font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex; align-items: center; gap: 8px;
+    }
+    .tech-pill:hover {
+        background: rgba(0,240,255,0.08);
+        border-color: var(--border-hover);
+        color: #fff; transform: translateY(-2px);
+    }
+    .tech-pill i { color: var(--primary); }
+
+    /* Glow Button */
+    .btn-glow {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000 !important; font-weight: 700;
+        border-radius: 100px; padding: 14px 28px;
+        border: none; transition: all 0.3s;
+        position: relative; overflow: hidden;
+    }
+    .btn-glow::before {
+        content: ''; position: absolute; top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: left 0.6s;
+    }
+    .btn-glow:hover::before { left: 100%; }
+    .btn-glow:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(0, 240, 255, 0.4);
+        color: #000 !important;
+    }
+
+    .btn-ghost-modern {
+        background: transparent;
+        border: 1px solid var(--border-soft);
+        color: white !important; font-weight: 600;
+        padding: 14px 28px; border-radius: 100px;
+        transition: all 0.3s;
+    }
+    .btn-ghost-modern:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.2);
+        color: white !important; transform: translateY(-2px);
+    }
+
+    .stat-mini {
+        text-align: center; padding: 20px 10px;
+        border-right: 1px solid var(--border-soft);
+    }
+    .stat-mini:last-child { border: none; }
+    .stat-mini-num {
+        font-family: 'Outfit'; font-size: 2rem;
+        font-weight: 900; line-height: 1;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-mini-label {
+        font-size: 0.75rem; color: var(--text-muted);
+        text-transform: uppercase; letter-spacing: 2px;
+        margin-top: 4px;
+    }
+
+    .section-title {
+        font-size: 1.8rem; font-weight: 800;
+        margin-bottom: 24px;
+    }
+
+    /* Process Timeline */
+    .process-step {
+        position: relative; padding-left: 50px;
+        margin-bottom: 24px;
+    }
+    .process-step::before {
+        content: ''; position: absolute;
+        left: 16px; top: 32px; bottom: -24px;
+        width: 1px; background: var(--border-soft);
+    }
+    .process-step:last-child::before { display: none; }
+    .process-num {
+        position: absolute; left: 0; top: 0;
+        width: 32px; height: 32px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 0.85rem;
+        font-family: 'Outfit';
+    }
+
+    /* Next Project */
+    .next-project {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 28px;
+        padding: 60px 40px;
+        text-align: center;
+        margin-top: 80px;
+        transition: all 0.4s;
+    }
+    .next-project:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-4px);
+    }
+</style>
+
+<div class="container">
+    <!-- HERO -->
+    <section class="case-hero gs-reveal">
+        <a href="{{ url_for('main.projects') }}" class="breadcrumb-modern mb-4">
+            <i class="bi bi-arrow-left"></i> Tous les projets
+        </a>
+
+        <div class="row align-items-end mt-4">
+            <div class="col-lg-8">
+                <span class="meta-label" style="color: var(--primary);">Étude de cas · {{ project.category|default('Web') }}</span>
+                <h1 class="display-huge text-white mb-3 mt-2">{{ project.title }}</h1>
+                
+                <div class="meta-pills">
+                    <span class="meta-pill"><i class="bi bi-calendar-event"></i> {{ project.date or '2026' }}</span>
+                    <span class="meta-pill"><i class="bi bi-person"></i> Lead Developer</span>
+                    <span class="meta-pill"><i class="bi bi-clock-history"></i> 3 semaines</span>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <div class="d-grid gap-2">
-                {% if project.demo_link %}
-                    <a href="{{ project.demo_link }}" target="_blank" class="btn btn-primary py-3 fw-bold">
-                        Lancer la Démo <i class="bi bi-box-arrow-up-right ms-2"></i>
-                    </a>
-                {% endif %}
-                {% if project.source_link %}
-                    <a href="{{ project.source_link }}" target="_blank" class="btn btn-outline-light py-3 fw-bold">
-                        <i class="bi bi-github me-2"></i> Voir le code source
-                    </a>
-                {% endif %}
+    <!-- HERO IMAGE -->
+    <section class="mb-5 gs-reveal">
+        <div class="image-frame">
+            <img src="{{ url_for('static', filename='uploads/' + project.image) if project.image else url_for('static', filename='images/default-project.jpg') }}" 
+                 class="project-hero-img" alt="{{ project.title }}">
+        </div>
+    </section>
+
+    <!-- KEY METRICS -->
+    <section class="mb-5 gs-reveal">
+        <div class="bento-card">
+            <div class="row g-0">
+                <div class="col-6 col-md-3 stat-mini">
+                    <div class="stat-mini-num">+150%</div>
+                    <div class="stat-mini-label">Conversions</div>
+                </div>
+                <div class="col-6 col-md-3 stat-mini">
+                    <div class="stat-mini-num">< 2s</div>
+                    <div class="stat-mini-label">Load Time</div>
+                </div>
+                <div class="col-6 col-md-3 stat-mini">
+                    <div class="stat-mini-num">98</div>
+                    <div class="stat-mini-label">Score Lighthouse</div>
+                </div>
+                <div class="col-6 col-md-3 stat-mini">
+                    <div class="stat-mini-num">100%</div>
+                    <div class="stat-mini-label">Satisfaction</div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- CONTENT -->
+    <section class="row g-4 mb-5 pb-5">
+        <div class="col-lg-8 gs-reveal">
+            <!-- Contexte -->
+            <div class="bento-card mb-4">
+                <span class="meta-label" style="color: var(--primary);">01 — Le défi</span>
+                <h3 class="section-title">Contexte <span class="text-gradient-luxury">& objectif</span></h3>
+                <p class="lh-lg" style="color: var(--text-soft); font-size: 1.05rem;">
+                    {{ project.description }}
+                </p>
+            </div>
+
+            <!-- Process -->
+            <div class="bento-card mb-4">
+                <span class="meta-label" style="color: var(--primary);">02 — La méthode</span>
+                <h3 class="section-title">Approche <span class="text-gradient-luxury">stratégique</span></h3>
+                
+                <div class="process-step">
+                    <div class="process-num">1</div>
+                    <h6 class="text-white mb-1">Discovery & Audit</h6>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Immersion dans les enjeux business, mapping des user-flows critiques.
+                    </p>
+                </div>
+                <div class="process-step">
+                    <div class="process-num">2</div>
+                    <h6 class="text-white mb-1">Architecture & Design</h6>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Wireframes interactifs, validation client, schéma BDD.
+                    </p>
+                </div>
+                <div class="process-step">
+                    <div class="process-num">3</div>
+                    <h6 class="text-white mb-1">Sprint de développement</h6>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Code propre, tests unitaires, déploiement progressif.
+                    </p>
+                </div>
+                <div class="process-step">
+                    <div class="process-num">4</div>
+                    <h6 class="text-white mb-1">Mise en production</h6>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Optimisation finale, formation client, monitoring 30 jours.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Stack -->
+            <div class="bento-card">
+                <span class="meta-label" style="color: var(--primary);">03 — Stack technique</span>
+                <h3 class="section-title"><i class="bi bi-cpu text-primary me-2"></i>Infrastructure</h3>
+                <p style="color: var(--text-soft);" class="mb-4">
+                    Architecture pensée pour la performance industrielle et la scalabilité long-terme.
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-pill"><i class="bi bi-filetype-py"></i>Python 3.11</span>
+                    <span class="tech-pill"><i class="bi bi-server"></i>Flask</span>
+                    <span class="tech-pill"><i class="bi bi-database"></i>PostgreSQL</span>
+                    <span class="tech-pill"><i class="bi bi-bootstrap"></i>Bootstrap 5</span>
+                    <span class="tech-pill"><i class="bi bi-lightning-charge"></i>Vercel Edge</span>
+                    <span class="tech-pill"><i class="bi bi-shield-check"></i>JWT Auth</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="col-lg-4 gs-reveal">
+            <div class="bento-card sticky-top" style="top: 120px;">
+                <h4 class="fw-bold mb-4 pb-3" style="border-bottom: 1px solid var(--border-soft);">
+                    Aperçu rapide
+                </h4>
+                
+                <div class="mb-4">
+                    <span class="meta-label">Client / Entité</span>
+                    <span class="meta-value">{{ project.client or 'Open Source' }}</span>
+                </div>
+
+                <div class="mb-4">
+                    <span class="meta-label">Mon rôle</span>
+                    <span class="meta-value">Lead Full-Stack</span>
+                </div>
+
+                <div class="mb-4">
+                    <span class="meta-label">Industrie</span>
+                    <span class="meta-value">{{ project.category|default('Web SaaS') }}</span>
+                </div>
+
+                <div class="mb-5">
+                    <span class="meta-label">Statut</span>
+                    <span class="meta-value text-success">
+                        <i class="bi bi-check-circle-fill me-1"></i>En production
+                    </span>
+                </div>
+
+                <div class="d-grid gap-3">
+                    {% if project.demo_link or project.link %}
+                    <a href="{{ project.demo_link or project.link }}" target="_blank" class="btn btn-glow d-flex align-items-center justify-content-center gap-2">
+                        Voir la démo <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    {% endif %}
+                    
+                    {% if project.source_link %}
+                    <a href="{{ project.source_link }}" target="_blank" class="btn btn-ghost-modern d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-github"></i> Code source
+                    </a>
+                    {% endif %}
+
+                    <a href="{{ url_for('main.contact') }}" class="btn btn-ghost-modern d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-chat-dots"></i> Projet similaire ?
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEXT PROJECT CTA -->
+    <section class="gs-reveal mb-5">
+        <div class="next-project">
+            <span class="meta-label" style="color: var(--primary);">Suivant</span>
+            <h2 class="display-huge mb-3" style="font-size: clamp(2rem, 5vw, 3.5rem);">
+                Votre projet, <span class="text-gradient-primary">notre prochain cas</span>
+            </h2>
+            <p class="lead mb-4" style="color: var(--text-soft);">
+                Inspiré ? Discutons de votre vision.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="{{ url_for('main.contact') }}" class="btn btn-glow text-decoration-none">
+                    Démarrer un projet <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+                <a href="{{ url_for('main.projects') }}" class="btn btn-ghost-modern text-decoration-none">
+                    Autres projets
+                </a>
+            </div>
+        </div>
+    </section>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        gsap.registerPlugin(ScrollTrigger);
+        document.querySelectorAll('.gs-reveal').forEach((el) => {
+            gsap.fromTo(el, 
+                { y: 40, opacity: 0 },
+                {
+                    scrollTrigger: { trigger: el, start: "top 95%", once: true },
+                    y: 0, opacity: 1, duration: 0.8, ease: "power3.out"
+                }
+            );
+        });
+    });
+</script>
 {% endblock %}

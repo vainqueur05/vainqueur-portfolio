@@ -1,151 +1,565 @@
 {% extends 'base.html' %}
 
-{% block title %}À propos - Kairos Portfolio{% endblock %}
+{% block title %}À Propos — L'ADN KAIROS{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-lg-8 mx-auto text-center">
-            <i class="bi bi-quote display-1 text-primary"></i>
-            <p class="lead">"{{ bio.bio_text|default('Je suis développeur passionné...') }}"</p>
-            <footer class="blockquote-footer">{{ bio.name }}</footer>
-        </div>
-    </div>
+<style>
+    .about-hero { padding: 160px 0 80px; }
+    
+    .section-eyebrow {
+        display: inline-block; color: var(--primary); font-size: 0.85rem;
+        font-weight: 600; text-transform: uppercase; letter-spacing: 4px;
+        margin-bottom: 16px; font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    .display-huge { 
+        font-size: clamp(2rem, 5vw, 3.5rem); 
+        font-weight: 900; line-height: 1.05; letter-spacing: -0.03em;
+    }
+    
+    .text-gradient-primary { 
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
 
-    <!-- Services que j'offre (2 services principaux) -->
-    <div class="row mt-5 g-4">
-        <div class="col-md-6">
-            <div class="card h-100 p-4">
-                <i class="bi bi-laptop fs-1 text-primary"></i>
-                <h3>Développement logiciel</h3>
-                <p>Applications métier, automatisations, outils sur mesure pour optimiser vos processus.</p>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card h-100 p-4">
-                <i class="bi bi-globe fs-1 text-primary"></i>
-                <h3>Développement web</h3>
-                <p>Sites vitrines, e-commerce, applications web interactives avec les technologies modernes.</p>
-            </div>
-        </div>
-    </div>
+    .bento-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 28px;
+        padding: 40px;
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+    .bento-card:hover { border-color: var(--border-hover); }
 
-    <!-- Mes résultats en chiffres -->
-    <div class="row mt-5 text-center g-4">
-        <div class="col-md-3">
-            <i class="bi bi-trophy display-4 text-primary"></i>
-            <h3>100%</h3>
-            <p>Satisfaction client</p>
-        </div>
-        <div class="col-md-3">
-            <i class="bi bi-code-slash display-4 text-primary"></i>
-            <h3>20+</h3>
-            <p>Projets livrés</p>
-        </div>
-        <div class="col-md-3">
-            <i class="bi bi-award display-4 text-primary"></i>
-            <h3>5 ans</h3>
-            <p>Expérience</p>
-        </div>
-        <div class="col-md-3">
-            <i class="bi bi-chat display-4 text-primary"></i>
-            <h3>24/7</h3>
-            <p>Support</p>
-        </div>
-    </div>
+    /* ===== HERO QUOTE ===== */
+    .hero-quote {
+        position: relative; max-width: 900px; margin: 0 auto;
+    }
+    .hero-quote-mark {
+        position: absolute; top: -40px; left: -20px;
+        font-size: 8rem; line-height: 1;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        opacity: 0.3; font-family: 'Outfit'; font-weight: 900;
+    }
+    .hero-quote-text {
+        font-size: clamp(1.6rem, 4vw, 2.6rem);
+        font-weight: 600; line-height: 1.3;
+        font-family: 'Outfit'; color: white;
+        position: relative; z-index: 2;
+    }
+    .quote-author {
+        display: flex; align-items: center; justify-content: center;
+        gap: 16px; margin-top: 40px;
+    }
+    .quote-author-line {
+        width: 60px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
 
-    <!-- Mon histoire et parcours -->
-<section class="container py-5 fade-up">
-    <div class="row">
-        <div class="col-md-6">
-            <h2 class="section-title">L'ADN Kairos</h2>
-            <p class="lead">
-                Originaire de l'<strong>électricité industrielle</strong>, j'ai gardé le goût du travail bien fait et de la <strong>sécurité des systèmes</strong>. 
-                Mon diplôme en génie logiciel n'est qu'un outil de plus pour transformer vos idées en <strong>moteurs de croissance</strong>.
+    /* ===== TIMELINE ===== */
+    .timeline-item {
+        position: relative; padding-left: 50px;
+        padding-bottom: 32px;
+    }
+    .timeline-item::before {
+        content: ''; position: absolute;
+        left: 12px; top: 32px; bottom: 0;
+        width: 1px; background: var(--border-soft);
+    }
+    .timeline-item:last-child::before { display: none; }
+    
+    .timeline-dot {
+        position: absolute; left: 0; top: 6px;
+        width: 26px; height: 26px;
+        background: var(--surface);
+        border: 2px solid var(--primary);
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(0,240,255,0.3);
+    }
+    .timeline-dot::after {
+        content: ''; position: absolute; inset: 4px;
+        background: var(--primary); border-radius: 50%;
+    }
+
+    .timeline-year {
+        color: var(--primary); font-weight: 700;
+        font-size: 0.85rem; letter-spacing: 2px;
+        font-family: 'Space Grotesk';
+    }
+
+    /* ===== VALUE CARD ===== */
+    .value-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 20px;
+        padding: 28px;
+        transition: all 0.4s;
+        height: 100%;
+        display: flex; gap: 18px;
+    }
+    .value-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-4px);
+    }
+    .value-icon {
+        width: 50px; height: 50px;
+        background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(139,92,246,0.1));
+        border: 1px solid var(--border-soft);
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; color: var(--primary);
+        flex-shrink: 0;
+    }
+
+    /* ===== STATS ===== */
+    .stat-block {
+        text-align: center; padding: 40px 20px;
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 24px;
+        transition: all 0.4s;
+        height: 100%;
+    }
+    .stat-block:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-6px);
+    }
+    .stat-number {
+        font-family: 'Outfit'; font-size: 3.5rem;
+        font-weight: 900; line-height: 1;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label {
+        color: var(--text-muted); font-size: 0.8rem;
+        text-transform: uppercase; letter-spacing: 3px;
+        margin-top: 12px;
+        font-family: 'Space Grotesk';
+    }
+
+    /* ===== EXPERTISE ===== */
+    .expertise-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 28px;
+        padding: 40px;
+        transition: all 0.5s;
+        position: relative; overflow: hidden;
+        height: 100%;
+    }
+    .expertise-card::before {
+        content: ''; position: absolute;
+        top: -50%; right: -50%;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(0,240,255,0.15), transparent 70%);
+        opacity: 0; transition: opacity 0.5s;
+    }
+    .expertise-card:hover::before { opacity: 1; }
+    .expertise-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-6px);
+    }
+    .expertise-icon {
+        width: 70px; height: 70px;
+        background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(139,92,246,0.1));
+        border: 1px solid var(--border-soft);
+        border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem; margin-bottom: 24px;
+    }
+
+    /* ===== METHOD ===== */
+    .method-step {
+        padding: 30px 20px 30px 30px;
+        border-left: 2px solid var(--border-soft);
+        position: relative; height: 100%;
+        transition: all 0.4s;
+    }
+    .method-step:hover { border-left-color: var(--primary); }
+    .method-step::before {
+        content: ''; position: absolute;
+        left: -8px; top: 30px;
+        width: 14px; height: 14px;
+        background: var(--primary); border-radius: 50%;
+        box-shadow: 0 0 15px var(--primary);
+    }
+    .method-num {
+        font-family: 'Outfit'; font-size: 0.85rem;
+        color: var(--primary); letter-spacing: 3px;
+        font-weight: 700; margin-bottom: 8px;
+    }
+
+    /* ===== FINAL CTA ===== */
+    .final-cta-about {
+        background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(139,92,246,0.05));
+        border: 1px solid var(--border-soft);
+        border-radius: 32px; padding: 70px 40px;
+        text-align: center; position: relative; overflow: hidden;
+    }
+    .final-cta-about::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at 50% 0%, rgba(0,240,255,0.1), transparent 50%);
+        pointer-events: none;
+    }
+
+    .btn-primary-glow {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000 !important; font-weight: 700;
+        padding: 16px 40px; border-radius: 100px; border: none;
+        transition: all 0.3s; box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3);
+    }
+    .btn-primary-glow:hover {
+        transform: translateY(-3px); 
+        box-shadow: 0 20px 50px rgba(0, 240, 255, 0.5);
+        color: #000 !important;
+    }
+</style>
+
+<div class="container">
+    <!-- HERO QUOTE -->
+    <section class="about-hero gs-reveal">
+        <div class="hero-quote text-center">
+            <span class="hero-quote-mark">"</span>
+            <p class="hero-quote-text mb-0">
+                Je transforme des <span class="text-gradient-primary">idées complexes</span> 
+                en moteurs de croissance digitaux. Pas de bullshit. Pas de promesses creuses. 
+                Juste du <em style="font-weight:300;">code qui parle</em>.
             </p>
+            <div class="quote-author">
+                <div class="quote-author-line"></div>
+                <span class="text-uppercase" style="color: var(--text-soft); letter-spacing: 4px; font-size: 0.85rem; font-weight: 600;">
+                    {{ bio.name|default('Vainqueur Kalema') }}
+                </span>
+                <div class="quote-author-line"></div>
+            </div>
         </div>
+    </section>
 
-        <div class="col-md-6">
-            <h2>Mes valeurs</h2>
-            <ul>
-                <li>Transparence</li>
-                <li>Réactivité</li>
-                <li>Qualité</li>
-                <li>Innovation</li>
-            </ul>
+    <!-- ADN -->
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-lg-7 gs-reveal">
+                <div class="bento-card">
+                    <span class="section-eyebrow">Origine</span>
+                    <h2 class="display-huge mb-4">L'ADN <span class="text-gradient-primary">KAIROS</span></h2>
+                    
+                    <p class="lead mb-3" style="color: var(--text-soft); font-size: 1.1rem;">
+                        Mon approche est née à l'intersection de deux mondes : 
+                        <strong class="text-white">l'électricité industrielle</strong> et le 
+                        <strong class="text-white">génie logiciel</strong>.
+                    </p>
+                    <p style="color: var(--text-soft); line-height: 1.8;">
+                        De l'industrie, j'ai gardé le culte de la précision, de la sécurité des systèmes 
+                        et du travail robuste. <strong class="text-white">Quand un câble lâche, ce sont des vies en jeu.</strong> 
+                        Cette rigueur, je l'applique aujourd'hui à chaque ligne de code.
+                    </p>
+                    <p style="color: var(--text-soft); line-height: 1.8;">
+                        Aujourd'hui, j'utilise ces principes pour coder des solutions web et logicielles 
+                        qui ne sont pas seulement <em>belles</em>, mais qui sont de véritables 
+                        <strong class="text-white">machines de guerre techniques</strong>.
+                    </p>
+                    
+                    <div class="mt-4 p-4 rounded-4" style="background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.15);">
+                        <p class="mb-0 small" style="color: var(--primary);">
+                            <i class="bi bi-mortarboard-fill me-2"></i> 
+                            <strong>Diplômé en Informatique de Conception</strong> — pour valider une passion 
+                            qui m'habite depuis l'adolescence.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 gs-reveal">
+                <div class="bento-card" style="background: linear-gradient(180deg, rgba(0,240,255,0.05), var(--surface));">
+                    <span class="section-eyebrow">Code de conduite</span>
+                    <h3 class="fw-bold mb-4">Mes <span class="text-gradient-primary">non-négociables</span></h3>
+                    
+                    <div class="value-card mb-3">
+                        <div class="value-icon"><i class="bi bi-eye"></i></div>
+                        <div>
+                            <h6 class="text-white fw-bold mb-1">Transparence radicale</h6>
+                            <p class="small mb-0" style="color: var(--text-soft);">
+                                Zéro coût caché. Zéro promesse vide.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="value-card mb-3">
+                        <div class="value-icon"><i class="bi bi-lightning-charge"></i></div>
+                        <div>
+                            <h6 class="text-white fw-bold mb-1">Réactivité industrielle</h6>
+                            <p class="small mb-0" style="color: var(--text-soft);">
+                                Votre temps est sacré. Le mien aussi.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="value-card">
+                        <div class="value-icon"><i class="bi bi-shield-lock"></i></div>
+                        <div>
+                            <h6 class="text-white fw-bold mb-1">Qualité sans compromis</h6>
+                            <p class="small mb-0" style="color: var(--text-soft);">
+                                Code propre, scalable, durable.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-<section class="container py-5 fade-up">
-    <h2 class="section-title text-center mb-5">L'Engagement Kairos</h2>
-    <div class="row g-4">
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="py-5 mb-5 gs-reveal">
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">Parcours</span>
+            <h2 class="display-huge mb-0">Le <span class="text-gradient-primary">chemin</span> parcouru</h2>
+        </div>
         
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 p-4 text-center border-0 shadow-sm" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px);">
-                <div class="icon-box mb-3">
-                    <i class="bi bi-eye-fill fs-1 text-primary"></i>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="bento-card">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <span class="timeline-year">2020 · LE DÉCLIC</span>
+                        <h5 class="text-white fw-bold mt-2 mb-2">Découverte du code</h5>
+                        <p class="mb-0" style="color: var(--text-soft);">
+                            Première ligne de Python. La passion devient obsession.
+                        </p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <span class="timeline-year">2022 · FORMATION</span>
+                        <h5 class="text-white fw-bold mt-2 mb-2">Études en Informatique de Conception</h5>
+                        <p class="mb-0" style="color: var(--text-soft);">
+                            Théorie, algorithmes, architecture. Construire les fondations.
+                        </p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <span class="timeline-year">2024 · PREMIERS PROJETS</span>
+                        <h5 class="text-white fw-bold mt-2 mb-2">Lancement freelance</h5>
+                        <p class="mb-0" style="color: var(--text-soft);">
+                            Les premiers clients me font confiance. Je livre. Ils reviennent.
+                        </p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <span class="timeline-year">2026 · KAIROS</span>
+                        <h5 class="text-white fw-bold mt-2 mb-2">Naissance du studio</h5>
+                        <p class="mb-0" style="color: var(--text-soft);">
+                            Plus qu'un freelance : un studio digital avec une vision claire.
+                        </p>
+                    </div>
                 </div>
-                <h5 class="text-white">Clarté Radicale</h5>
-                <p class="small text-muted">Zéro jargon. Vous gardez une visibilité totale sur l'évolution et les coûts de votre projet.</p>
             </div>
         </div>
+    </section>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 p-4 text-center border-0 shadow-sm" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px);">
-                <div class="icon-box mb-3">
-                    <i class="bi bi-lightning-charge-fill fs-1 text-warning"></i>
+    <!-- EXPERTISE -->
+    <section class="py-5 mb-5">
+        <div class="text-center mb-5 gs-reveal">
+            <span class="section-eyebrow">Domaines</span>
+            <h2 class="display-huge mb-0">Expertise <span class="text-gradient-primary">studio</span></h2>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 gs-reveal">
+                <div class="expertise-card">
+                    <div class="expertise-icon" style="color: var(--primary);">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <h3 class="fw-bold">Développement logiciel</h3>
+                    <p style="color: var(--text-soft); line-height: 1.7;">
+                        Applications métier, automatisations complexes, outils sur-mesure.
+                        Je traduis vos besoins opérationnels en algorithmes performants.
+                    </p>
+                    <div class="d-flex gap-2 flex-wrap mt-3">
+                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(0,240,255,0.1); color: var(--primary); border: 1px solid rgba(0,240,255,0.2);">Python</span>
+                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(0,240,255,0.1); color: var(--primary); border: 1px solid rgba(0,240,255,0.2);">Automation</span>
+                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(0,240,255,0.1); color: var(--primary); border: 1px solid rgba(0,240,255,0.2);">APIs</span>
+                    </div>
                 </div>
-                <h5 class="text-white">Agilité Kairos</h5>
-                <p class="small text-muted">Le temps est votre actif le plus précieux. Je réagis en temps réel pour propulser vos idées.</p>
+            </div>
+            <div class="col-md-6 gs-reveal">
+                <div class="expertise-card">
+                    <div class="expertise-icon" style="color: var(--accent);">
+                        <i class="bi bi-globe-americas"></i>
+                    </div>
+                    <h3 class="fw-bold">Développement web pro</h3>
+                    <p style="color: var(--text-soft); line-height: 1.7;">
+                        Du site vitrine haute couture à l'e-commerce complexe.
+                        Flask pour la flexibilité totale et des performances de premier ordre.
+                    </p>
+                    <div class="d-flex gap-2 flex-wrap mt-3">
+                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(139,92,246,0.1); color: var(--accent); border: 1px solid rgba(139,92,246,0.2);">Flask</span>
+                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(139,92,246,0.1); color: var(--accent); border: 1px solid rgba(139,92,246,0.2);">UI/UX</span>
+                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(139,92,246,0.1); color: var(--accent); border: 1px solid rgba(139,92,246,0.2);">SEO</span>
+                    </div>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 p-4 text-center border-0 shadow-sm" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px);">
-                <div class="icon-box mb-3">
-                    <i class="bi bi-shield-check fs-1 text-success"></i>
+    <!-- STATS -->
+    <section class="py-5 mb-5">
+        <div class="row g-4">
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="stat-block">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Satisfaction</div>
                 </div>
-                <h5 class="text-white">Excellence Technique</h5>
-                <p class="small text-muted">Héritée de la rigueur industrielle : un code robuste, sécurisé et prêt à passer à l'échelle.</p>
+            </div>
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="stat-block">
+                    <div class="stat-number">30+</div>
+                    <div class="stat-label">Projets livrés</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="stat-block">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Ans d'expertise</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="stat-block">
+                    <div class="stat-number">< 4h</div>
+                    <div class="stat-label">Temps de réponse</div>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 p-4 text-center border-0 shadow-sm" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px);">
-                <div class="icon-box mb-3">
-                    <i class="bi bi-cpu-fill fs-1 text-info"></i>
+    <!-- ENGAGEMENTS -->
+    <section class="py-5 mb-5">
+        <div class="text-center mb-5 gs-reveal">
+            <span class="section-eyebrow">Manifesto</span>
+            <h2 class="display-huge mb-0">L'engagement <span class="text-gradient-primary">KAIROS</span></h2>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="bento-card text-center">
+                    <i class="bi bi-eye-fill fs-1 text-primary mb-3 d-block"></i>
+                    <h5 class="text-white fw-bold">Clarté radicale</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Zéro jargon. Visibilité totale.
+                    </p>
                 </div>
-                <h5 class="text-white">Vision Futuriste</h5>
-                <p class="small text-muted">Intégration des dernières technos (IA, Flask, React) pour garder une longueur d'avance.</p>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="bento-card text-center">
+                    <i class="bi bi-lightning-charge-fill fs-1 mb-3 d-block" style="color: #f59e0b;"></i>
+                    <h5 class="text-white fw-bold">Agilité réelle</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Adaptation immédiate.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="bento-card text-center">
+                    <i class="bi bi-shield-check fs-1 mb-3 d-block" style="color: #22c55e;"></i>
+                    <h5 class="text-white fw-bold">Rigueur industrielle</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Code robuste, hérité du terrain.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="bento-card text-center">
+                    <i class="bi bi-cpu-fill fs-1 mb-3 d-block" style="color: var(--accent);"></i>
+                    <h5 class="text-white fw-bold">Vision future</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        IA & technos de demain.
+                    </p>
+                </div>
             </div>
         </div>
+    </section>
 
-    </div>
-</section>
-</section>
+    <!-- METHOD -->
+    <section class="py-5 mb-5">
+        <div class="text-center mb-5 gs-reveal">
+            <span class="section-eyebrow">Process</span>
+            <h2 class="display-huge mb-0">Ma méthode de <span class="text-gradient-primary">travail</span></h2>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="method-step">
+                    <div class="method-num">01 — ÉCOUTE</div>
+                    <h4 class="text-white fw-bold">Immersion totale</h4>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Comprendre votre business, vos enjeux, vos rêves.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="method-step">
+                    <div class="method-num">02 — CONCEPTION</div>
+                    <h4 class="text-white fw-bold">Architecture & UX</h4>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Design d'interface validé avant la première ligne.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="method-step">
+                    <div class="method-num">03 — SPRINT</div>
+                    <h4 class="text-white fw-bold">Développement agile</h4>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Itérations courtes, tests constants, sécurité d'abord.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 gs-reveal">
+                <div class="method-step">
+                    <div class="method-num">04 — DELIVERY</div>
+                    <h4 class="text-white fw-bold">Lancement & support</h4>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Déploiement, SEO, accompagnement long-terme.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- Méthode de travail -->
-    <div class="row mt-5">
-        <h2 class="section-title">Ma méthode de travail</h2>
-        <div class="col-md-3 text-center">
-            <i class="bi bi-chat-dots fs-1 text-primary"></i>
-            <h4>1. Écoute</h4>
-            <p>Comprendre vos besoins</p>
+    <!-- FINAL CTA -->
+    <section class="py-5 gs-reveal mb-5">
+        <div class="final-cta-about">
+            <span class="section-eyebrow">Et maintenant ?</span>
+            <h2 class="display-huge mb-4">
+                Convaincu par <span class="text-gradient-primary">l'approche</span> ?
+            </h2>
+            <p class="lead mb-4 mx-auto" style="color: var(--text-soft); max-width: 600px;">
+                Faisons équipe pour construire quelque chose dont vous serez fier.
+            </p>
+            <a href="{{ url_for('main.contact') }}" class="btn-primary-glow text-decoration-none">
+                Démarrer une collaboration <i class="bi bi-arrow-right ms-2"></i>
+            </a>
         </div>
-        <div class="col-md-3 text-center">
-            <i class="bi bi-pencil-square fs-1 text-primary"></i>
-            <h4>2. Conception</h4>
-            <p>Maquettes et spécifications</p>
-        </div>
-        <div class="col-md-3 text-center">
-            <i class="bi bi-code-square fs-1 text-primary"></i>
-            <h4>3. Développement</h4>
-            <p>Itérations et validations</p>
-        </div>
-        <div class="col-md-3 text-center">
-            <i class="bi bi-rocket fs-1 text-primary"></i>
-            <h4>4. Livraison</h4>
-            <p>Mise en ligne et support</p>
-        </div>
-    </div>
+    </section>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        gsap.registerPlugin(ScrollTrigger);
+        document.querySelectorAll('.gs-reveal').forEach((el) => {
+            gsap.fromTo(el, 
+                { y: 50, opacity: 0 },
+                {
+                    scrollTrigger: { trigger: el, start: "top 90%", once: true },
+                    y: 0, opacity: 1, duration: 1, ease: "power3.out"
+                }
+            );
+        });
+    });
+</script>
 {% endblock %}

@@ -1,136 +1,430 @@
 {% extends 'base.html' %}
 
-{% block title %}Contact - Kairos Portfolio{% endblock %}
+{% block title %}Contact — Démarrons votre projet | KAIROS{% endblock %}
 
 {% block content %}
-<div class="container py-5 fade-up">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-white">Prêt à lancer votre projet ?</h1>
-        <p class="lead text-muted">Transformons votre vision en une solution numérique performante.</p>
-    </div>
+<style>
+    .contact-hero { padding: 160px 0 60px; }
+    
+    .section-eyebrow {
+        display: inline-block; color: var(--primary); font-size: 0.85rem;
+        font-weight: 600; text-transform: uppercase; letter-spacing: 4px;
+        margin-bottom: 16px; font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    .display-huge { 
+        font-size: clamp(2.5rem, 7vw, 5.5rem); 
+        font-weight: 900; line-height: 0.95; letter-spacing: -0.04em;
+    }
+    
+    .text-gradient-primary { 
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
 
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card p-4 h-100 shadow-lg border-primary">
-                <h3 class="category-title mb-4">Canal de Réponse Prioritaire</h3>
-                <div class="row g-4 mt-2">
-                    <div class="col-6 text-center">
-                        <i class="bi bi-clock-history fs-1 text-primary mb-2"></i>
-                        <h6 class="mb-0 text-white">Chiffrage Express</h6>
-                        <p class="small text-muted">Devis détaillé < 24h</p>
-                    </div>
-                    <div class="col-6 text-center">
-                        <i class="bi bi-people-fill fs-1 text-primary mb-2"></i>
-                        <h6 class="mb-0 text-white">Lien Direct</h6>
-                        <p class="small text-muted">Zéro intermédiaire</p>
-                    </div>
-                    <div class="col-6 text-center">
-                        <a href="{{ url_for('main.whatsapp_redirect') }}" class="text-decoration-none" target="_blank">
-                            <i class="bi bi-whatsapp fs-1 text-success mb-2"></i>
-                            <h6 class="mb-0 text-white">Hotline Instantanée</h6>
-                            <p class="small text-muted">Réponse immédiate</p>
-                        </a>
-                    </div>
-                    <div class="col-6 text-center">
-                        <i class="bi bi-envelope-check-fill fs-1 text-info mb-2"></i>
-                        <h6 class="mb-0 text-white">Expertise Formelle</h6>
-                        <p class="small text-muted">Email professionnel</p>
-                    </div>
-                </div>
+    .bento-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 28px;
+        padding: 40px;
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+    .bento-card:hover { border-color: var(--border-hover); }
+
+    /* ===== CHANNEL CARDS ===== */
+    .channel-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 24px;
+        padding: 30px;
+        transition: all 0.4s;
+        height: 100%;
+        text-decoration: none;
+        display: block;
+        position: relative;
+        overflow: hidden;
+    }
+    .channel-card::before {
+        content: ''; position: absolute; top: 0; left: 0;
+        width: 4px; height: 100%;
+        background: linear-gradient(180deg, var(--primary), var(--accent));
+        transform: scaleY(0); transform-origin: top;
+        transition: transform 0.4s;
+    }
+    .channel-card:hover::before { transform: scaleY(1); }
+    .channel-card:hover {
+        background: rgba(0,240,255,0.03);
+        border-color: var(--border-hover);
+        transform: translateX(6px);
+    }
+
+    .channel-card.whatsapp:hover { 
+        background: rgba(37, 211, 102, 0.05);
+        border-color: rgba(37, 211, 102, 0.3);
+    }
+    .channel-card.whatsapp::before {
+        background: linear-gradient(180deg, #25d366, #128c7e);
+    }
+
+    .channel-icon {
+        width: 56px; height: 56px;
+        background: rgba(0,240,255,0.1);
+        border: 1px solid var(--border-soft);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; color: var(--primary);
+        margin-bottom: 20px;
+    }
+    .channel-card.whatsapp .channel-icon {
+        background: rgba(37, 211, 102, 0.1);
+        color: #25d366;
+        border-color: rgba(37, 211, 102, 0.2);
+    }
+    .channel-card.email .channel-icon {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--accent);
+        border-color: rgba(139, 92, 246, 0.2);
+    }
+    .channel-card.phone .channel-icon {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+        border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .channel-meta {
+        display: flex; align-items: center; gap: 8px;
+        color: var(--text-muted); font-size: 0.8rem;
+        margin-top: 16px; padding-top: 16px;
+        border-top: 1px solid var(--border-soft);
+    }
+    .response-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #22c55e; box-shadow: 0 0 10px #22c55e;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ===== WORKFLOW ===== */
+    .workflow-step {
+        position: relative; padding-left: 60px;
+        margin-bottom: 32px;
+    }
+    .workflow-step::before {
+        content: ''; position: absolute;
+        left: 22px; top: 48px; bottom: -32px;
+        width: 1px;
+        background: linear-gradient(180deg, var(--primary), transparent);
+    }
+    .workflow-step:last-child::before { display: none; }
+    
+    .step-number {
+        position: absolute; left: 0; top: 0;
+        width: 46px; height: 46px;
+        background: var(--surface);
+        border: 1.5px solid var(--primary);
+        color: var(--primary);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-family: 'Outfit';
+        font-size: 1.05rem; z-index: 2;
+        box-shadow: 0 0 20px rgba(0,240,255,0.2);
+    }
+
+    /* ===== TRUST SECTION ===== */
+    .trust-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 20px;
+        padding: 24px;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    .trust-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-4px);
+    }
+
+    /* ===== AVAILABILITY ===== */
+    .availability-banner {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(0, 240, 255, 0.05));
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 20px;
+        padding: 20px 24px;
+        display: flex; align-items: center; gap: 16px;
+        margin-bottom: 40px;
+    }
+    .availability-icon {
+        width: 50px; height: 50px;
+        background: rgba(34, 197, 94, 0.15);
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .availability-icon i {
+        color: #22c55e; font-size: 1.5rem;
+        animation: pulse-icon 2s infinite;
+    }
+    @keyframes pulse-icon {
+        0%,100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    /* ===== SOCIAL ICONS ===== */
+    .social-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .social-btn {
+        width: 50px; height: 50px;
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--text-soft); text-decoration: none;
+        font-size: 1.3rem;
+        transition: all 0.3s;
+    }
+    .social-btn:hover {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: #000; transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,240,255,0.3);
+    }
+
+    /* Coordonnées */
+    .coord-item {
+        display: flex; align-items: center; gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border-soft);
+    }
+    .coord-item:last-child { border: none; }
+    .coord-icon {
+        width: 48px; height: 48px;
+        background: rgba(0,240,255,0.08);
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--primary); font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+</style>
+
+<div class="container">
+    <!-- HERO -->
+    <section class="contact-hero text-center gs-reveal">
+        <div class="availability-banner d-inline-flex">
+            <div class="availability-icon">
+                <i class="bi bi-circle-fill"></i>
+            </div>
+            <div class="text-start">
+                <div class="fw-bold text-white">Disponible — 2 places ce mois</div>
+                <small style="color: var(--text-soft);">Réponse garantie sous 4h ouvrées</small>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card p-4 h-100 shadow-lg">
-                <h3 class="category-title mb-4">Le Workflow Kairos</h3>
-                <div class="mt-2">
-                    <div class="mb-4 d-flex align-items-start">
-                        <i class="bi bi-chat-left-dots-fill text-primary me-3 fs-4"></i>
-                        <div>
-                            <h6 class="text-white mb-1">1. Initialisation</h6>
-                            <p class="small text-muted mb-0">Définition du périmètre et de vos objectifs business.</p>
-                        </div>
+        <h1 class="display-huge mb-4">
+            Construisons<br>
+            <span class="text-gradient-primary">l'inattendu.</span>
+        </h1>
+        <p class="lead mx-auto" style="max-width: 680px; color: var(--text-soft); font-size: 1.2rem;">
+            Une bonne idée mérite mieux qu'un email perdu. 
+            Choisissez votre canal, je vous réponds personnellement.
+        </p>
+    </section>
+
+    <!-- CHANNELS -->
+    <section class="mb-5 gs-reveal">
+        <div class="text-center mb-4">
+            <span class="section-eyebrow">Canaux directs</span>
+            <h2 class="fw-bold mb-0" style="font-size: 2rem;">Comment veux-tu qu'on se parle ?</h2>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 gs-reveal">
+                <a href="{{ url_for('main.whatsapp_redirect') }}" target="_blank" class="channel-card whatsapp">
+                    <div class="channel-icon">
+                        <i class="bi bi-whatsapp"></i>
                     </div>
-                    <div class="mb-4 d-flex align-items-start">
-                        <i class="bi bi-diagram-3-fill text-primary me-3 fs-4"></i>
-                        <div>
-                            <h6 class="text-white mb-1">2. Architecture & Devis</h6>
-                            <p class="small text-muted mb-0">Structure technique et proposition budgétaire transparente.</p>
-                        </div>
+                    <h5 class="text-white fw-bold mb-2">WhatsApp</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Le canal le plus rapide. Pour discuter en temps réel comme avec un ami.
+                    </p>
+                    <div class="channel-meta">
+                        <span class="response-dot"></span>
+                        <span>Réponse en moins de 30 min</span>
                     </div>
-                    <div class="mb-4 d-flex align-items-start">
-                        <i class="bi bi-code-square text-primary me-3 fs-4"></i>
-                        <div>
-                            <h6 class="text-white mb-1">3. Sprint de Création</h6>
-                            <p class="small text-muted mb-0">Développement agile et validations itératives.</p>
-                        </div>
+                </a>
+            </div>
+
+            <div class="col-md-4 gs-reveal">
+                <a href="mailto:vainqueurkalema035@gmail.com" class="channel-card email">
+                    <div class="channel-icon">
+                        <i class="bi bi-envelope-fill"></i>
                     </div>
-                    <div class="d-flex align-items-start">
-                        <i class="bi bi-rocket-takeoff-fill text-primary me-3 fs-4"></i>
-                        <div>
-                            <h6 class="text-white mb-1">4. Déploiement</h6>
-                            <p class="small text-muted mb-0">Mise en ligne optimisée et support technique continu.</p>
-                        </div>
+                    <h5 class="text-white fw-bold mb-2">Email Pro</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Idéal pour cahiers des charges, documents et demandes formelles.
+                    </p>
+                    <div class="channel-meta">
+                        <span class="response-dot"></span>
+                        <span>Réponse sous 4h ouvrées</span>
                     </div>
-                </div>
+                </a>
+            </div>
+
+            <div class="col-md-4 gs-reveal">
+                <a href="tel:+243895288981" class="channel-card phone">
+                    <div class="channel-icon">
+                        <i class="bi bi-telephone-fill"></i>
+                    </div>
+                    <h5 class="text-white fw-bold mb-2">Appel direct</h5>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Vous préférez la voix ? Un appel vaut mille emails.
+                    </p>
+                    <div class="channel-meta">
+                        <span class="response-dot"></span>
+                        <span>Lun-Sam · 8h-20h GMT+2</span>
+                    </div>
+                </a>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="row mt-5 g-4">
-        <div class="col-md-6">
-            <div class="card p-4 h-100 border-0 bg-transparent">
-                <h3 class="mb-4">Démarrer maintenant</h3>
-                <div class="d-grid gap-3">
-                    <a href="{{ url_for('main.whatsapp_redirect') }}" class="btn btn-success btn-lg py-3 shadow" target="_blank">
-                        <i class="bi bi-whatsapp me-2"></i> Lancer la discussion WhatsApp
-                    </a>
-                    <a href="mailto:vainqueurkalema035@gmail.com" class="btn btn-primary btn-lg py-3 shadow">
-                        <i class="bi bi-envelope me-2"></i> Envoyer un Email Pro
-                    </a>
-                    <a href="tel:+243895288981" class="btn btn-outline-light btn-lg py-3">
-                        <i class="bi bi-phone me-2"></i> Appels Directs
-                    </a>
+    <!-- WORKFLOW + COORDS -->
+    <section class="row g-4 mb-5">
+        <div class="col-lg-7 gs-reveal">
+            <div class="bento-card">
+                <span class="section-eyebrow">Process</span>
+                <h3 class="fw-bold mb-4">Le workflow <span class="text-gradient-primary">KAIROS</span></h3>
+                
+                <div class="workflow-step">
+                    <div class="step-number">01</div>
+                    <h6 class="text-white mb-1 fw-bold">Premier contact</h6>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Vous me parlez de votre projet. Je vous écoute. Pas de jargon, pas de pression.
+                    </p>
                 </div>
                 
-                <div class="mt-5 text-center">
-                    <h5 class="mb-3 text-muted small text-uppercase fw-bold">Réseaux Professionnels</h5>
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="https://github.com/Vainqueur-Kalema" target="_blank" class="btn btn-outline-primary rounded-circle"><i class="bi bi-github"></i></a>
-                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="bi bi-linkedin"></i></a>
-                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="bi bi-instagram"></i></a>
-                    </div>
+                <div class="workflow-step">
+                    <div class="step-number">02</div>
+                    <h6 class="text-white mb-1 fw-bold">Diagnostic & devis</h6>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Sous 24h, vous recevez une proposition claire : périmètre, prix, délai. Aucune surprise.
+                    </p>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card p-4 h-100 border-primary" style="background: rgba(13, 110, 253, 0.05);">
-                <h3 class="mb-4">Coordonnées Officielles</h3>
-                <div class="mb-3 d-flex align-items-center">
-                    <i class="bi bi-geo-alt-fill text-primary fs-4 me-3"></i>
-                    <div>
-                        <span class="d-block fw-bold text-white">Lubumbashi, RDC</span>
-                        <small class="text-muted">Disponible pour des missions internationales.</small>
-                    </div>
+                
+                <div class="workflow-step">
+                    <div class="step-number">03</div>
+                    <h6 class="text-white mb-1 fw-bold">Sprint de création</h6>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Développement agile avec validations régulières. Vous suivez l'avancée en temps réel.
+                    </p>
                 </div>
-                <div class="mb-3 d-flex align-items-center">
-                    <i class="bi bi-envelope-at-fill text-primary fs-4 me-3"></i>
-                    <span class="text-white">vainqueurkalema035@gmail.com</span>
-                </div>
-                <div class="mb-4 d-flex align-items-center">
-                    <i class="bi bi-broadcast text-primary fs-4 me-3"></i>
-                    <span class="text-white">+243 895 288 981</span>
-                </div>
-                <hr class="border-secondary opacity-25">
-                <div class="p-3 rounded bg-dark">
-                    <p class="mb-0 small italic text-muted text-center">
-                        <i class="bi bi-info-circle me-1"></i> 
-                        Vous recevrez une réponse dans un délai maximum de 24 heures ouvrées.
+                
+                <div class="workflow-step">
+                    <div class="step-number">04</div>
+                    <h6 class="text-white mb-1 fw-bold">Lancement & support</h6>
+                    <p class="small mb-0" style="color: var(--text-soft);">
+                        Mise en ligne, formation, 30 jours de support offerts. Votre succès est mon objectif.
                     </p>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="col-lg-5 gs-reveal">
+            <div class="bento-card">
+                <span class="section-eyebrow">Coordonnées</span>
+                <h3 class="fw-bold mb-4">Où me <span class="text-gradient-primary">trouver</span></h3>
+                
+                <div class="coord-item">
+                    <div class="coord-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                    <div>
+                        <div class="text-white fw-bold">Lubumbashi, RDC</div>
+                        <small style="color: var(--text-soft);">Missions internationales en remote</small>
+                    </div>
+                </div>
+
+                <div class="coord-item">
+                    <div class="coord-icon"><i class="bi bi-envelope-fill"></i></div>
+                    <div>
+                        <div class="text-white fw-bold">vainqueurkalema035@gmail.com</div>
+                        <small style="color: var(--text-soft);">Email principal</small>
+                    </div>
+                </div>
+
+                <div class="coord-item">
+                    <div class="coord-icon"><i class="bi bi-broadcast"></i></div>
+                    <div>
+                        <div class="text-white fw-bold">+243 895 288 981</div>
+                        <small style="color: var(--text-soft);">WhatsApp & Appels</small>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <small class="text-uppercase fw-bold d-block mb-3" style="color: var(--text-muted); letter-spacing: 2px; font-size: 0.75rem;">
+                        Réseaux pro
+                    </small>
+                    <div class="social-row">
+                        <a href="https://github.com/vainqueur05" target="_blank" class="social-btn" title="GitHub"><i class="bi bi-github"></i></a>
+                        <a href="#" class="social-btn" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="social-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-btn" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRUST GRID -->
+    <section class="mb-5 gs-reveal">
+        <div class="text-center mb-4">
+            <span class="section-eyebrow">Engagements</span>
+            <h2 class="fw-bold mb-0" style="font-size: 2rem;">Mes promesses, gravées dans le marbre</h2>
+        </div>
+        
+        <div class="row g-3">
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="trust-card">
+                    <i class="bi bi-shield-check fs-1 text-primary mb-2 d-block"></i>
+                    <h6 class="text-white mb-1">Confidentialité</h6>
+                    <small style="color: var(--text-soft);">NDA disponible sur demande</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="trust-card">
+                    <i class="bi bi-lightning-charge-fill fs-1 text-warning mb-2 d-block"></i>
+                    <h6 class="text-white mb-1">Réactivité</h6>
+                    <small style="color: var(--text-soft);">Réponse < 4h ouvrées</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="trust-card">
+                    <i class="bi bi-cash-coin fs-1 text-success mb-2 d-block"></i>
+                    <h6 class="text-white mb-1">Transparence</h6>
+                    <small style="color: var(--text-soft);">Zéro coût caché</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 gs-reveal">
+                <div class="trust-card">
+                    <i class="bi bi-arrow-repeat fs-1 text-info mb-2 d-block"></i>
+                    <h6 class="text-white mb-1">Flexibilité</h6>
+                    <small style="color: var(--text-soft);">Révisions illimitées</small>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        gsap.registerPlugin(ScrollTrigger);
+        document.querySelectorAll('.gs-reveal').forEach((el) => {
+            gsap.fromTo(el, 
+                { y: 50, opacity: 0, scale: 0.98 },
+                {
+                    scrollTrigger: { trigger: el, start: "top 90%", once: true },
+                    y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out"
+                }
+            );
+        });
+    });
+</script>
 {% endblock %}
