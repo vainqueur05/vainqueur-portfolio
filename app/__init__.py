@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
 from flask_mail import Mail, Message
+from app.models import GlobalConfig
+from app.utils import log_visit
 
 # Initialisation globale
 db = SQLAlchemy()
@@ -37,7 +39,6 @@ def create_app():
         if '/admin' in request.path or '/auth' in request.path:
             return None
 
-        from app.models import GlobalConfig
         maintenance_active = GlobalConfig.is_maintenance()
         
         if maintenance_active:
@@ -47,10 +48,14 @@ def create_app():
 
         if request.endpoint and not request.endpoint.startswith('admin.'):
             try:
-                from app.utils import log_visit as log_visit_util
-                log_visit_util(request.endpoint)
+                log_visit(request.endpoint)
             except Exception:
                 pass
+
+    # --- ROUTE HEALTH CHECK ---
+    @app.route('/health')
+    def health():
+        return 'ok', 200
 
     # --- GESTION DES ERREURS ---
     @app.errorhandler(404)
@@ -76,10 +81,15 @@ def create_app():
         from app.models import User
         return User.query.get(int(user_id))
 
+    # Création automatique des tables (si elles n'existent pas)
+    with app.app_context():
+        db.create_all()
+
     return app
 
 # ==========================================
-# SOLUTION INJECTÉE POUR VERCEL
+# SOLUTION INJECTÉE POUR RENDER
 # ==========================================
+
 app = create_app()
-# ==========================================
+

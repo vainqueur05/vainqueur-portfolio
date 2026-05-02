@@ -6,3 +6,4 @@ Flask-WTF
 python-dotenv
 email-validator
 gunicorn
+werkzeug==3.0.3

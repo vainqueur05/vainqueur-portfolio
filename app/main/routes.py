@@ -2,6 +2,10 @@ from flask import render_template, redirect,request
 from app.main import bp
 from app.models import Bio, Service, Project, Testimonial, Skill, Stat, Benefit,WhatsAppClick
 
+@bp.route('/health')
+def health():
+    return 'ok', 200
+
 @bp.route('/')
 def index():
     bio = Bio.get_singleton()
