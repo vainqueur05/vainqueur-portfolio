@@ -1,1 +1,1 @@
-web: gunicon --bind :$POST run:app
+web: gunicon run:app
